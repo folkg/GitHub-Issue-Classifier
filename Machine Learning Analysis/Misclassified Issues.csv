@@ -1,0 +1,3311 @@
+number,prediction,PredictionLabel,number,title,author_association,body,Target
+12012,1.0,Support,12012,React.Children.toArray and React.cloneElement do not work with portal elements,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+
+BUG or undefined behaviour
+
+**What is the current behavior?**
+
+Doing
+```
+React.Children.toArray(
+  ReactDOM.createPortal(...)
+)
+```
+
+fails with:
+```
+Objects are not valid as a React child (found: object with keys {$$typeof, key, children, containerInfo, implementation}). If you meant to render a collection of children, use an array instead.
+```
+
+Namely, the following complete snippet fails:
+
+```jsx
+import React from 'react';
+import { render, createPortal } from 'react-dom';
+
+const RenderChildren = ({ children }) => {
+  children = React.Children.toArray(children)
+  return <h1>Renders children with toArray: {children}</h1>
+}
+
+
+const App = () => ( 
+  <RenderChildren name=""CodeSandbox"">
+    {createPortal(<div>rendered in portal</div>, document.getElementById('portal'))}
+  </RenderChildren>
+);
+
+render(<App />, document.getElementById('root'));
+```
+
+while the following one, which wraps the portal in another element works just fine
+
+```jsx
+import React from 'react';
+import { render, createPortal } from 'react-dom';
+
+const RenderChildren = ({ children }) => {
+  children = React.Children.toArray(children)
+  return <h1>Renders children with toArray: {children}</h1>
+}
+
+
+const App = () => ( 
+  <RenderChildren name=""CodeSandbox"">
+    <div>
+        {createPortal(<div>rendered in portal</div>, document.getElementById('portal'))}
+    </div>
+  </RenderChildren>
+);
+
+render(<App />, document.getElementById('root'));
+
+```
+**What is the expected behavior?**
+I am aware that `createPortal` is a new feature, but in the best case scenario it should be possible to use it everywhere other valid nodes are accepted.
+
+The same thing is happening for `React.cloneElement(ReactDOM.createPortal(....))` - it's probably weird to try and clone a portal 😄  - but maybe we should specify in the `createPortal` documentation that it cannot be cloned, at least for now. Should I open a PR for that?
+
+Let me know your thoughts
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+I'm using React 16.*",Feature
+12197,1.0,Support,12197,Warn on ComponentName.PropTypes,CONTRIBUTOR,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+Feature
+
+**What is the current behavior?**
+Sometimes, when my boss is stressing me out, I add prop types this way:
+
+```js
+const MyButton = props => <button>{/* some fancy implementation */}</button>;
+MyButton.PropTypes = { children: node.isRequired };
+```
+
+Notice the upper-case P in PropTypes. React does not warn me about this typo.
+
+**What is the expected behavior?**
+
+I'd love to get a warning about this (and `DefaultProps` for that sake) whenever I mis-type them.
+
+I would actually love to implement a pull request for this, but I couldn't find anywhere else where you're warning about static properties like these. Where would you like me to put this code?",Other
+12340,1.0,Support,12340,jsx's close tag name may optional?,NONE,"
+**Do you want to request a *feature* or report a *bug*?**
+*feature*
+
+**What is the current behavior?**
+```html
+<div>
+  <p>some text</p>
+  <hr/>
+</div>
+```
+
+**What is the expected behavior?**
+because the html tag always pairs, so if simple write better?
+```html
+<div>
+  <p>some text</>
+  <hr/>
+</>
+```",Feature
+12343,1.0,Support,12343,Use case:,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+
+**What is the current behavior?**
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+**What is the expected behavior?**
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+",Other
+12372,1.0,Support,12372,react 16.3 new context API basic intent,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+misunderstanding
+
+**What is the current behavior?**
+Impossible to render a component which is a provider furnished by createContext function
+trying to follow those articles :  
+[whats new in react](https://medium.com/@baphemot/whats-new-in-react-16-3-d2c9b7b6193b)
+[react new context API](https://medium.com/dailyjs/reacts-%EF%B8%8F-new-context-api-70c9fe01596b)
+
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+[code sandBox example](https://codesandbox.io/embed/k591mqw98o)
+sourceCode of codeSandBox :  
+```
+import React, { Component, createContext } from ""react"";
+import { render } from ""react-dom"";
+
+const CartState = createContext({
+  open: false
+});
+
+class CartStateProvider extends Component {
+  state = { open: false };
+
+  render() {
+    return (
+      <CartState.Provider value={this.state.open}>
+        {this.props.children}
+      </CartState.Provider>
+    );
+  }
+}
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <CartStateProvider>
+          <CartState.Consumer>
+            {({ open }) => {
+              return <div>{open ? ""open"" : ""closed""}</div>;
+            }}
+          </CartState.Consumer>
+        </CartStateProvider>
+      </div>
+    );
+  }
+}
+
+render(<App />, document.getElementById(""root""));
+```
+
+**What is the expected behavior?**
+It should render ""closed""
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+i'm testing with react 16.3.0-alpha.1, as it is new feature, it cannot work in previous releases
+",Other
+12485,1.0,Support,12485,Error still logged to console when caught by error boundary in testing,NONE,"**Do you want to request a *feature* or report a *bug*?**
+
+I'm not quite sure if feature/bug... I have an error boundary, and I want to test that it works correctly, but it produces a big `console.error` and there doesn't seem a great way to get around it.
+
+**What is the current behavior?**
+
+When an error is captured by the error boundary, it still logs to console during tests, making it look like something failed but it is expected (because I am testing error boundary) in this case.
+
+```
+    console.error node_modules/react-dom/cjs/react-dom.development.js:9747
+      The above error occurred in the <Child> component:
+          in Child (at ErrorBoundary.test.jsx:20)
+          in ErrorBoundary (created by WrapperComponent)
+          in WrapperComponent
+
+      React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+```
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+Error  Boundary:
+```jsx
+import React from ""react"";
+import PropTypes from ""prop-types"";
+
+export default class ErrorBoundary extends React.Component {
+  static propTypes = {
+    children: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.arrayOf(PropTypes.node)
+    ]).isRequired,
+    render: PropTypes.func.isRequired
+  };
+
+  state = {
+    hasError: false,
+    error: null,
+    errorInfo: null
+  };
+
+  componentDidCatch(error, errorInfo) {
+    this.setState({ hasError: true, error, errorInfo });
+
+    // if we have Bugsnag in this environment, we can notify our error tracker
+    if (window.Bugsnag) {
+      window.Bugsnag.notify(error);
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.render(this.state.error, this.state.errorInfo);
+    }
+    return this.props.children;
+  }
+}
+```
+
+ErrorBoundary.test.jsx
+```jsx
+import ErrorBoundary from ""./ErrorBoundary"";
+
+const Child = () => {
+  throw ""error"";
+};
+
+it(""catches error and renders message"", () => {
+  const wrapper = mount(
+    <ErrorBoundary render={() => <div>Error has occurred</div>}>
+      <Child />
+    </ErrorBoundary>
+  );
+
+  expect(wrapper.text()).toEqual(""Error has occurred"");
+});
+```
+
+**What is the expected behavior?**
+
+I'm not sure exactly... here is a way I can sort of temporarily pause `console.error` logging during the course of the test, but it seems messy. How should error boundaries be tested?
+
+Here is a *hacky* solution:
+```jsx
+import ErrorBoundary from ""./ErrorBoundary"";
+
+const Child = () => {
+  throw ""error"";
+};
+
+const pauseErrorLogging = codeToRun => {
+  const logger = console.error;
+  console.error = () => {};
+
+  codeToRun();
+
+  console.error = logger;
+};
+
+it(""catches error and renders message"", () => {
+  pauseErrorLogging(() => {
+    const wrapper = mount(
+      <ErrorBoundary render={() => <div>Error has occurred</div>}>
+        <Child />
+      </ErrorBoundary>
+    );
+
+    expect(wrapper.text()).toEqual(""Error has occurred"");
+  });
+});
+```
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+16.2 (with enzyme 3.3)
+",Other
+12551,1.0,Support,12551,New Context Provider may block Old context propagation if children are constant,CONTRIBUTOR,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+
+Bug
+
+**What is the current behavior?**
+
+It seems that, if the children of a new-style `React.createContext()` context `Provider` are constant, the `Provider` can block updates from old-style `this.context` context providers from propagating to `this.context` consumers.
+
+This sandbox demonstrates the issue. Clicking the button with a number will correctly increment the `Root`'s `state` and `context`, but the update is only propagated to the `Child3`'s `context` (and its button) when the ""Colors!"" button is clicked, as it causes an update to the `value` of the new-style `Provider`:
+
+https://codesandbox.io/s/ol4lpokpjy
+
+<details>
+<summary>Copy of the source code in the sandbox</summary>
+
+```jsx
+import PropTypes from ""prop-types"";
+import React from ""react"";
+import ReactDOM from ""react-dom"";
+
+class Root extends React.Component {
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      count: 0
+    };
+    this.countUp = this.countUp.bind(this);
+  }
+
+  getChildContext() {
+    return {
+      ...this.context,
+      count: this.state.count,
+      countUp: this.countUp
+    };
+  }
+
+  render() {
+    return this.props.children;
+  }
+
+  countUp() {
+    this.setState(({ count }) => ({ count: count + 1 }));
+  }
+}
+
+Root.childContextTypes = {
+  count: PropTypes.number.isRequired,
+  countUp: PropTypes.func.isRequired
+};
+
+const ctx = React.createContext();
+
+class Child1 extends React.Component {
+  constructor(props: { onClick(): void }) {
+    super(props);
+    this.state = {
+      color: randomHexColor(),
+      newColor: this.newColor.bind(this)
+    };
+  }
+
+  render() {
+    return (
+      <ctx.Provider value={this.state}>{this.props.children}</ctx.Provider>
+    );
+  }
+
+  newColor() {
+    const color = randomHexColor();
+    this.setState(() => ({ color }));
+  }
+}
+
+function randomHexColor() {
+  const colorStr = Math.floor(Math.random() * (Math.pow(2, 24) - 1)).toString(
+    16
+  );
+  return ""#000000"".slice(0, -colorStr.length) + colorStr;
+}
+
+class Child2 extends React.Component {
+  render() {
+    return (
+      <ctx.Consumer>
+        {ctx => (
+          <React.Fragment>
+            <Child3 color={ctx.color} />
+            <button onClick={ctx.newColor}>Colors!</button>
+          </React.Fragment>
+        )}
+      </ctx.Consumer>
+    );
+  }
+}
+
+class Child3 extends React.Component {
+  render() {
+    return (
+      <button
+        style={{ color: this.props.color }}
+        onClick={this.context.countUp}
+      >
+        {this.context.count}
+      </button>
+    );
+  }
+}
+
+Child3.contextTypes = {
+  count: PropTypes.number.isRequired,
+  countUp: PropTypes.func.isRequired
+};
+
+ReactDOM.render(
+  <Root>
+    <Child1>
+      <Child2 />
+    </Child1>
+  </Root>,
+  document.getElementById(""root"")
+);
+
+```
+
+</details>
+
+**What is the expected behavior?**
+
+Both old-style and new-style context updates should coexist.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+16.3.1; also broken in 16.3.0.
+
+---
+
+This seems to only happen if the `children` of the `Provider` are constant, which is what happens when the children are provided on the first and only `ReactDOM.render` call. If `Child1` is updated to directly use `<Child2/>` instead of `{this.props.children}`, the problem does not happen.
+
+This can also be a problem when using a production optimization that hoists constant elements outside the Component if the specified children are constant, which would even defeat the fix/workaround for the example above.",Bug
+12693,1.0,Support,12693,react-test-renderer.create does not work properly with forwardRef components,NONE,"**Do you want to request a *feature* or report a *bug*?**
+Bug
+
+**What is the current behavior?**
+If you try to access the `.root` of a component tree of a component created with `forwardRef`, you will get an error
+
+> `Unexpected object passed to ReactTestInstance constructor`
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+A minimal example is simply a component created with `forwardRef`:
+
+```js
+import React from ""react"";
+
+export default React.forwardRef(() => <div>hello</div>);
+```
+
+Now if you try to use `create` from `react-test-renderer` and access `.root`, you will get
+
+> Unexpected object passed to ReactTestInstance constructor (tag: 14). This is probably a bug in React.
+
+```js
+import React from ""react"";
+import { create } from ""react-test-renderer"";
+
+import Hello from ""./Hello"";
+
+it(""test forwardRef component"", () => {
+  const tree = create(<Hello />);
+  expect(tree.root);
+});
+```
+
+https://codesandbox.io/s/vm98x95wx5
+
+**What is the expected behavior?**
+You should be able to create components created with forwardRef with the test renderer.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+16.3 using jest (forwardRef did not exist previously).",Bug
+12723,1.0,Support,12723,The findByType method from react-test-renderer doesn't find ref-forwarding components,CONTRIBUTOR,"**Do you want to request a *feature* or report a *bug*?**
+Bug
+
+**What is the current behavior?**
+In tests, if the component passed to `root.findByType` was created using `forwardRef` it can't be found.
+
+If I use `root.find` to loop over all the nodes and log `.type` I see that the ref-forwarding-component is skipped entirely.
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+https://codesandbox.io/s/k0o70vjv07?module=%2Fsrc%2Findex.test.js
+
+I expect the second test to work like the first, however the second test is failing.
+
+**What is the expected behavior?**
+This may just be the way that `forwardRef` works, but the reason I expected it to work is I'm using it to make wrapped controls, like the `<FancyButton>` example from the documentation. When writing tests I want to be able to find a `FancyButton` and test it's besing passed the correct props, and not have to check that the DOM rendered by `FancyButton` is correct; that's already being tested in `fancy-button.test.js`
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+Using React 16.3.2, failing in Chrome and Node 8.11.0
+
+I've tried all the `16.3.x` versions in codesandbox and they all failed.",Bug
+12774,0.0,Other,12774,this.state doesn't  get the current state properly,NONE,"Related to this issue 
+https://github.com/dmtrKovalenko/material-ui-pickers/issues/396#issuecomment-387972773
+
+I found a work around by checking the state out of the onChange. But i can't figure out why it behaves like that in the first place.
+
+Example:
+https://codesandbox.io/s/2zrx49zwjj",Support
+12866,1.0,Support,12866,Dynamic components rendering [Object object],NONE,"**Do you want to request a *feature* or report a *bug*?**
+
+Report a bug.
+
+**What is the current behavior?**
+
+__Description__: I have done a small util to lazy load components. The approach is to store the lazy-component in the state and import it in the componentDidMount callback triggering a re-render. A simplified example can be seen here: https://github.com/isidrok/react-bug/blob/master/index.js.
+
+__Problem__: When the lazy-component is loaded and the component is updated new children are being set as text instead of children, resulting in [Object object].
+
+__Remarks__: This behaviour is different depending on the React version and the build tool:
+* `React 16.0.0` with `any build tool`: works.
+* `React 16.3.2` with `create-react-app`: works.
+* `React 16.3.2` with `rollup` and __NODE_ENV === ""production""__: works.
+* `React 16.3.2` with `rollup` and __NODE_ENV === ""development""__: __fails__.
+
+Therefore I assume there is  something different in how `create-react-app` and `rollup` handle environment variables replacement but the thing is it works totally fine if using `React 16.0.0` so that's why I think this is a bug.
+
+__Steps to reproduce__:
+1. Download the sample repository https://github.com/isidrok/react-bug.
+2. Install the dependencies `npm i`.
+3. Run `npm start` to build the app, and `npm run serve` to start an http server in `localhost:8080`.
+4. Go into the `index.html` file, there you can choose wich version of the app to load `build.dev.js`(fails) or `build.prod.js`(works).
+5. Go into the file `index.js`, in the render method of component `App` you can choose to render the `Wrapper` or `LazyHello`. Rendering `LazyHello` will result in _Uncaught DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node._
+5. Navigate to the page and click on `Click me!`.
+
+**What is the expected behavior?**
+
+It should render the lazy-loaded component independently of the tool used for building the app or the `NODE_ENV` environment variable value. Moreover, it should keep working since it did in previous versions of React.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+* This issue affectes version 16.3.2 of React, but it doesn't affect previous versions such as 16.0.0
+* Browser: Google Chrome 66.0.3359.181 (Official Build) (64-bit)
+* OS: Linux mint 18
+
+Thanks!
+
+
+
+",Other
+12938,1.0,Support,12938,Client and server rendering desynchronized in documentation,NONE,"https://reactjs.org/docs/events
+
+Server renders the page properly, and then the client overwrites it with 404 message.",Other
+13246,1.0,Support,13246,build for production without using service-worker,NONE,"Due to on-going problems with React applications built using create-react-app not working in packaged versions of electron (see electron/electron#9705), I'm trying to find how to build production versions of the React application without using the service worker, is this possible?",Other
+13410,1.0,Support,13410,Investigate why select._wrapperState.initialValue is necessary,CONTRIBUTOR,"Uncovered during @raunofreiberg's select work (#13389).
+
+`select._wrapperState.initialValue` is only ever assigned, never referenced. Can it be removed?
+
+Example:
+https://github.com/facebook/react/blob/master/packages/react-dom/src/client/ReactDOMFiberSelect.js#L191
+
+It would be great if someone could investigate this, and figure out if it can be removed.",Bug
+13563,1.0,Support,13563,Document fragments cannot respond to events.,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+bug.
+
+**What is the current behavior?**
+
+Due to https://github.com/facebook/react/blob/ff93996028acb55b4f76aa11e29eef210a213e20/packages/react-dom/src/client/ReactDOMComponent.js#L225-L233 event listeners are added to the `DocumentFragment`, which we cannot access or modify.
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+```jsx
+import React from ""react"";
+import ReactDOM from ""react-dom"";
+
+import ""./styles.css"";
+
+function doSomething() {
+  alert(""Something happens!"");
+}
+
+function App() {
+  return (
+    <div className=""App"">
+      <h1>Hello CodeSandbox</h1>
+      <h2 onClick={doSomething}>Click me and nothing would happen.</h2>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById(""root"");
+var frag = document.createDocumentFragment();
+ReactDOM.render(<App />, frag);
+rootElement.appendChild(frag);
+```
+
+https://codesandbox.io/s/71znk844nj
+
+**What is the expected behavior?**
+
+We could manually call `manageEvents(element)` in some other element or the document, so that our components could still respond to the events.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+v16.4.2.",Other
+13696,0.0,Other,13696,JSX whitespace not consistent if line starts with an expression,NONE,"**Do you want to request a *feature* or report a *bug*?**
+Bug
+
+**What is the current behavior?**
+When a JSX content (text) line starts with an expression, the whitespace rules are not followed.
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+https://codepen.io/anon/pen/JaBLVq
+
+**What is the expected behavior?**
+Whitespace JSX rules should be respected always.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+16.3
+",Support
+13819,1.0,Support,13819,How to send a notification to specific user and handle it,NONE,"I'm an android and iOS developer. 
+on android and ios programming I can open a ***specific page*** when user click on the notification.
+
+for example, this is a sample JSON string from the server side to clients:
+
+    ""data"":{
+      ""pages"":""home""
+    }
+
+when I receive this notification I can open the `home` page.
+
+I want to handle my react pages when a notification will receive.
+
+Is it possible to handle this action? or on the web application, user just can see the message from notification?
+",Other
+13944,1.0,Support,13944,Cannot be used new contextType API in constructor?,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?** *feature* 
+
+**What is the current behavior?** Using `Component.contextType`, `this.context` keeps `null` in class component's constructor.
+
+**What is the expected behavior?** 
+
+-  `this.context` can be obtained in constructor
+- if implementing of the feature is inappropriate, write in documentations that `this.context` cannot be used in constructor.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?** React 16.6 (older React doesn't have `Component.contextType`) in Chrome 70 (Windows 7)
+",Bug
+13985,1.0,Support,13985,Warn if ReactDOM.createPortal is inside a noscript or other text content tag,CONTRIBUTOR,"**Do you want to request a *feature* or report a *bug*?**
+bug
+
+**What is the current behavior?**
+
+When calling `ReactDOM.createPortal` from within a `<noscript />`, nothing happens, no error is logged.
+
+```javascript
+ReactDOM.render(
+  <noscript>
+    {ReactDOM.createPortal(""yo"", modalNode)}
+  </noscript>,
+  appNode
+);
+```
+
+**What is the expected behavior?**
+
+Whether:
+- warn that it doesn't work (it worked in the previous version)
+- render the portal
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+- React 16.5.0 & more recent
+- Reproducible in every browser
+
+**Repro**
+https://jsfiddle.net/bloodyowl/n5u2wwjg/223296/",Feature
+14002,0.0,Other,14002,Safari Devtools flooded with security errors on react-dom selection work with iframes with diff origins,NONE,"hey folks, looks like [this code](https://github.com/facebook/react/commit/b565f495319750d98628425d120312997bee410b) added small issue with safari and it could flood devtools console output with messages like this:
+<img width=""875"" alt=""screenshot 2018-10-26 at 15 25 33"" src=""https://user-images.githubusercontent.com/778908/47569863-0e3a5c80-d935-11e8-8e59-8d95d35ba131.png""> 
+As I understand it happens [here](https://github.com/facebook/react/commit/b565f495319750d98628425d120312997bee410b#diff-a654f37b01573fc8006b426d56ad53ceR50) and I see you catch the error, but safari still adds the error message if you have iframes with different origin",Bug
+14019,1.0,Support,14019,useContext(Context.Consumer) doesn't receive updates properly,NONE,"I think there's a bug in 16.7.0-alpha.0 unless this is intentional.
+
+**What is the expected behavior?**
+I've been using the context API to implement a dynamic loader where a parent component is responsible for triggering and loading some network data, and one or more grand-child components want to consume that data or show ""Loading..."" while that data is being fetched.
+
+**What is the current behavior?**
+When I migrated to useContext() I don't get a re-render, and can't quite see how this is going to come about.  
+
+Can you update examples to show dynamic behaviour, or if not supported to highlight that we will still need to use Context.Consumer for that.
+
+",Other
+14160,0.0,Other,14160,XSS Protection: href Object not being html escaped as a props,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+I would like to request a bug.
+
+**What is the current behavior?**
+From what I know, it is possible to inject object in props. However, this object seems to be html escaped when inserted into the DOM from my observation. 
+
+Thus, if I try to add an onerror=alert('XSS') in a <img {this.props.dangerousAtt /> tag through a props, this is gonna be escaped when rendered. Then, I realized that inserting an id='test' is totally possible with a props. So I thought only dangerous javascript injectable attributes are escaped such as onerror,  onload, ...
+
+However, I realized that the href=javascript:alert('1') is not escaped when inserted through a props. The javascript gets executed. Here, I thought it might a bug. 
+
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+```
+class App extends Component {
+  render() {
+  const href = {href: ""javascript:alert('1')""};
+    return (
+      <div>
+      <a {...href}>Click here</a>     
+      </div>
+    ); 
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+```
+
+
+**What is the expected behavior?**
+
+I would expect the href object to be escaped as a props, so being treated exactly like onerror or other javascript attributes. 
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+React version: 16.6.0
+Browser: Chrome 70.0.3538.77",Support
+14266,0.0,Other,14266,props with same key and value,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Short form for props key and value**
+for example:
+*Instead of this*:
+```Javascript
+......
+const { name, age, photoURI } = this.state
+return (
+  <Person name={name} age={age} photoURI={photoURI} />
+)
+........
+```
+this:
+```Javascript
+.......
+const { name, age, photoURI } = this.state
+return (
+  <Person *name *age *photoURI />
+) 
+........
+```
+
+or even other way so that we don't have to write same key and value.
+maybe a doller ($) sign ``` <Person $name /> ``` and any other way
+
+like in es2015 there is a fix for:
+```Javascript
+const person = {
+  name: name,
+  age: age,
+  photoURI: photoURI
+}
+// to
+const person = { name, age, photoURI }
+```
+
+Pardon my English",Support
+14304,3.0,Feature,14304,I wonder if there are plans to support tslint for hooks like eslint-plugin-react-hooks,NONE,,Other
+14366,2.0,Bug,14366,업데이트 좀 그만 하세요 !!!,NONE,"React 개발팀:
+
+업데이트 좀 그만 하세요!!! 써글넘들...
+이전 버전과 현재 버전 사이에는 항상 연관성이 있고, 공통성이 있어야지!!!
+업데이트 할 때마다, 대량으로 수정을 해놓으면..
+사용자들이 React 각 버전마다 새로 공부를 해야 되잖아요!!!
+너무 변득스럽네요. 맨날 이랬다. 저랬다! 
+React가 그렇게 불안전한 플랫폼인가요? 
+매뉴얼도 좀 간단하게 만드세요. 
+링크가 너무 많아서, 사용자들이 이리 갔다, 저리 갔다 하면서 헷갈리게 하지말고..
+
+Angular 나 vue 로 갈아타던가 해야지! 
+React 업데이트가 정말 짜증나네요.",Other
+14413,1.0,Support,14413,useMemo gets called twice with Suspense,CONTRIBUTOR,"**Do you want to request a *feature* or report a *bug*?**
+
+Possible (future) bug
+
+**What is the current behavior?**
+
+I have a feeling this might be a known tradeoff because of how the reconciler throws away an unfinished subtree when a Promise is thrown, but since it surprised me and wasn't documented I felt I should report it anyway. If it is known/intended, feel free to close.
+
+If a component with useMemo re-renders because of a thrown Promise (Suspense), function is not memoized and gets called twice.
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+https://codesandbox.io/s/72o4mznvr1
+
+**What is the expected behavior?**
+
+useMemo gets called once?
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+16.7.0-alpha.2",Other
+14496,0.0,Other,14496,Local environment is not a problem after the line Error: Minified React error #31; visit,NONE,"react-dom.production.min.js:179 Error: Minified React error #31; visit https://reactjs.org/docs/error-decoder.html?invariant=31&args[]=object%20with%20keys%20%7Bmodule%2C%20planList%2C%20taskList%7D&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+",Support
+14537,1.0,Support,14537,Suggestion: make version of react only with hooks to reduce bundle size,NONE,"I think that should be a version of react without component stuff to reduce bundle size and another version with component and hooks 
+Is that would make a big effect of the bundle size or they are just some KBs ?",Other
+14544,1.0,Support,14544,`yarn flow` stuck at merging on Window10,CONTRIBUTOR,"**Do you want to request a *feature* or report a *bug*?**
+a bug
+
+**What is the current behavior?**
+See #14519 first.
+
+And i tested on a Linux machine,same node version,same yarn version,same npm version,and same operation.
+On Linux,`yarn flow` works well.
+I tested on another Window10 machine,also fail.
+
+So i think this is a **bug** related to flow,win10 and react source code,not my own problem.
+
+",Other
+14731,1.0,Support,14731,useState inside a context provider not properly read when called from timeout,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+
+Looks like a **bug**.
+
+**What is the current behavior?**
+
+I have a simple context set up to manage a global store. When implementing this context as a functional component with the useState hook, calls to my setStore function from inside a timeout are seeing old versions of the store and updating it incorrectly.
+
+Possibly a duplicate of #14010 but I don't see why the value of my store should be getting saved by the closure. The closure created by the setTimeout can't see the value of store, so it shouldn't be captured.
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+[https://codesandbox.io/s/mnxr754oy](https://codesandbox.io/s/mnxr754oy)
+
+Refresh the page in the sandbox and click the ""Increment otherVal"" button a few times. After 3 seconds, a timeout fires in ChildThree that sets myVal to 42 but doesn't touch otherVal; however, the changes made by incrementing otherVal get blown away. This doesn't happen with changes prompted by onClick events (as you can test by clicking ""Set myVal to 42"" on the bottom), only timeouts.
+
+The context implementation is in `store.js`. If you swap out the functional StoreProvider with the commented out class version, everything works as expected.
+
+It's possible that I'm doing something wrong with how my closures are being created in the functional StoreProvider but I can't see why.
+
+**What is the expected behavior?**
+
+The context provided function setStore should be seeing the correct copy of the state returned by the hook.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+Tested in Chrome/Firefox/Edge on React 16.9.0-alpha.1",Other
+14856,1.0,Support,14856,Chrome 73 breaks wheel events,NONE,"Similar to #8968, but for the `wheel` and `mousewheel` events. They are now passive by default for root elements in Chrome 73 (currently beta) which means React apps that have custom scrolling/zooming behaviors will run into issues.
+
+The quick fix may be to manually add event listeners with `{passive: false}` but has the React team considered if this should be configurable for the React event handler?
+
+Blog post from the Chrome team here: https://developers.google.com/web/updates/2019/02/scrolling-intervention",Bug
+14904,1.0,Support,14904,controlled input cursor jumps to end (again),NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+
+Bug
+
+**What is the current behavior?**
+
+when typing in a controlled input, the cursor always jumps to the end. This was an old issue that seems to have resurfaced.
+
+[this code pen](https://codepen.io/gaearon/pen/VmmPgp?editors=0010) used in the docs [here](https://reactjs.org/docs/forms.html#controlled-components)  has the problem in all browsers as far as I have been able to test.
+
+**What is the expected behavior?**
+
+because we are using the state to update the component as soon as it's changed, the input element should be able to keep the cursor in the same place.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+I'm at latest (16.8.2) and I tested on Chrome, FireFox, and Edge on Windows
+
+as far as I know, this was working at some point, though I don't know how long ago. possibly even before ""Fiber""
+
+",Bug
+14956,1.0,Support,14956,"Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead",NONE,"include.preload.js:1 [Deprecation] Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.
+
+**What is the expected behavior?**
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+",Other
+14975,1.0,Support,14975,componentDidUpdate (and componentDidMount) before the updates ref,NONE,"**Do you want to request a *feature* or report a *bug*?**
+bug
+
+**What is the current behavior?**
+componentDidUpdate (and componentDidMount) before the updates ref
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+https://codepen.io/anon/pen/eXpENK?editors=0011
+
+**What is the expected behavior?**
+componentDidUpdate  (and componentDidMount) after ref update
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+browser. last version",Other
+15056,1.0,Support,15056,Controlled contentEditable element contents not updated when state changes,NONE,"**Do you want to request a *feature* or report a *bug*?**
+Bug
+
+**What is the current behavior?**
+An element with contentEditable does not update the content when state updates.
+
+Reproduce:
+https://codesandbox.io/s/kk421m2jmr
+1. Type something in the contentEditable div.
+2. Click reset
+3. Expected div to contain ""TEXT RESET!""
+
+**Which versions of React
+16.8.4",Other
+15097,0.0,Other,15097,[lerna] Invariant Violation: Hooks can only be called inside the body of a function component.,NONE,"Hello,
+
+I have an error regarding hooks in a lerna architecture project where we import a ux lib made of style component inside a react project.
+If component are host in the same app, error is not thrown.
+
+**Do you want to request a *feature* or report a *bug*?**
+Report a bug
+
+**What is the current behavior?**
+
+An error is thrown:
+```
+Invariant Violation: Hooks can only be called inside the body of a function component. (https://fb.me/react-invalid-hook-call)
+    at invariant (http://localhost/static/js/main.chunk.js:121537:23)
+    at resolveDispatcher (http://localhost/static/js/main.chunk.js:122922:36)
+    at useRef (http://localhost/static/js/main.chunk.js:122956:28)
+    at useStateWithGetter (http://localhost/static/js/main.chunk.js:39121:71)
+    at useField (http://localhost/static/js/main.chunk.js:39161:35)
+    at http://localhost/static/js/main.chunk.js:39417:27
+    at renderWithHooks (http://localhost/static/js/0.chunk.js:70682:22)
+    at mountIndeterminateComponent (http://localhost/static/js/0.chunk.js:72686:17)
+    at beginWork (http://localhost/static/js/0.chunk.js:73237:20)
+    at performUnitOfWork (http://localhost/static/js/0.chunk.js:77166:16)
+    at workLoop (http://localhost/static/js/0.chunk.js:77207:28)
+    at renderRoot (http://localhost/static/js/0.chunk.js:77287:11)
+    at performWorkOnRoot (http://localhost/static/js/0.chunk.js:78232:11)
+    at performWork (http://localhost/static/js/0.chunk.js:78142:11)
+    at performSyncWork (http://localhost/static/js/0.chunk.js:78116:7)
+    at requestWork (http://localhost/static/js/0.chunk.js:77971:9)
+    at scheduleWork (http://localhost/static/js/0.chunk.js:77778:9)
+    at scheduleRootUpdate (http://localhost/static/js/0.chunk.js:78482:7)
+    at updateContainerAtExpirationTime (http://localhost/static/js/0.chunk.js:78508:14)
+    at updateContainer (http://localhost/static/js/0.chunk.js:78576:14)
+    at ReactRoot.push../node_modules/react-dom/cjs/react-dom.development.js.ReactRoot.render (http://localhost/static/js/0.chunk.js:78889:7)
+    at http://localhost/static/js/0.chunk.js:79041:18
+    at unbatchedUpdates (http://localhost/static/js/0.chunk.js:78359:14)
+    at legacyRenderSubtreeIntoContainer (http://localhost/static/js/0.chunk.js:79037:9)
+    at Object.render (http://localhost/static/js/0.chunk.js:79112:16)
+    at boot (http://localhost/static/js/main.chunk.js:207505:52)
+    at http://localhost/static/js/main.chunk.js:207517:10
+```
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+Use this [public repo](https://github.com/ppinel/test-informed-hooks) and follow the readme.
+It's a good representation of our project's architecture.
+You will experience the error.
+
+**What is the expected behavior?**
+Not throwing an error about hooks and displaying a working form.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+Well, didn't tested before 16.8.0. But using [react-form](https://github.com/react-tools/react-form) instead of [informed](https://github.com/joepuzzo/informed) works.
+An [issue](https://github.com/joepuzzo/informed/issues/167) has been open on informed repository.
+II have the feeling that it's more related to React than informed itself.
+
+I am aware of [this page](https://reactjs.org/warnings/invalid-hook-call-warning.html) but nothing worked.",Support
+15202,1.0,Support,15202,Can react delete subscripts directly? I have encountered this kind of problem.,NONE,,Other
+15527,1.0,Support,15527,Apparent memory leak using hooks,NONE,"**Do you want to request a *feature* or report a *bug*?**
+
+Maybe a bug. Maybe I'm just running into a weird edge case.
+
+**What is the current behavior?**
+
+I have a situation where using a combination of `useEffect`, `useCallback`, and having a function in the actual component render is causing a sort of memory leak.
+The current render of the component seems to hang on to references of past renders of the component. (more details in the reproduction sample repo)
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem.**
+
+I think I have this minimized about as much as I can:
+https://github.com/rally25rs/react-mem
+
+It's a basic `create-react-app` project, so you can just `yarn install && yarn start` it. There is some explanation/instructions in the web page that it renders.
+
+The `src/VirtualizedTable.js` file is the key file to look at.
+
+**What is the expected behavior?**
+
+As best as my brain can comprehend, memoized references should be getting cleared as the component props change and data should be garbage collected (but it isn't).
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+* Chrome
+* react@16.8.6
+",Other
+15719,1.0,Support,15719,React.memo doesn't work as expected in nextjs apps if Provider value changed,CONTRIBUTOR,"**bug**
+
+**What is the current behavior?**
+
+I can't reproduce this issue out of nextjs app, but see the code of index page  https://codesandbox.io/s/helloworld-i8wzm
+
+```javascript
+import * as React from ""react"";
+import Link from ""next/link"";
+
+const Context = React.createContext({});
+const TmpProvider = Context.Provider;
+
+const MemoChild = () => {
+  const r = React.useContext(Context);
+  // commenting line above make memo to work as expected, it never render on click
+  return null;
+};
+
+const Memo = React.memo(
+  () => {
+    console.info(""memo render"");
+    return <MemoChild />;
+  },
+  // NEVER UPDATE
+  () => true
+);
+
+const Test = () => {
+  console.info(""test render"");
+  return (
+    <TmpProvider value={{}}>
+      <Link href={{ pathname: ""/"" }}>
+        <a>click me to force rerender</a>
+      </Link>
+      <Memo />
+    </TmpProvider>
+  );
+};
+
+export default Test;
+
+```
+
+On every link click log contains both console.info output
+
+```
+test render
+memo render
+```
+
+But if I comment out this line `  const r = React.useContext(Context);`  at MemoChild
+log contains just `test render` on link click as expected.
+
+**What is the expected behavior?**
+
+`React.useContext(Context);` in the child of memoized component must not somehow affect code execution, and the only console output on link click must be
+```
+test render
+```
+
+",Other
+15723,1.0,Support,15723,Strange onScroll behaviour,NONE,"**Do you want to request a *feature* or report a *bug*?**
+
+Possible bug
+
+**What is the current behavior?**
+
+onScroll callback on parent element fires when children element is scrolled.
+Native listener working as expected, thought.
+
+Example with reproduction
+https://codesandbox.io/s/kk3th
+
+Just try to scroll little box with items.
+
+**What is the expected behavior?**
+
+I am not sure if this behaviour is correct, but it was unexpected for me, so it might be a bug.
+I was not expecting onScroll to fire at all.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+""react"": ""16.8.6""
+macOs Mojave 10.14.5
+
+Did not tried any other versions
+",Bug
+15777,1.0,Support,15777,React can import thirdpart react component from cdn?,NONE,"React can import third-part react component from cdn?
+Like `import('https://domain.com/components/index.js')`",Other
+15893,1.0,Support,15893,Feature Request: Keyed Hooks,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+*Do you want to request a feature or report a bug?* **Request a Feature**
+
+# Previous Issues
+
+""Keys for hooks"" was previously proposed in #14998 and closed without much discussion.
+
+See below (""Use Cases"") for particular use cases of keyed hooks, and why they provide a better, more-general solution than other approaches today.
+
+# Background: the rules of hooks
+
+The [Rules of Hooks](https://reactjs.org/docs/hooks-rules.html) outline how React hooks are allowed to be called. The rules are the following:
+
+- Hooks can only be called *at the top level* from custom hooks or React components
+- The same hooks, in the same order, must be called from any component every time it renders (or every time some custom hook is called)
+
+There are several good reasons for these rules:
+
+1. These rules enable the *implementation* of hooks to be simple (a global, incrementing counter identifies the state for each primitive hook).
+2. The rules enable the *syntax* of hooks to be simple (a sequence of function calls, in order, without explicitly threading state between them, and without needing to arrange them into e.g. an array)
+3. You can reason about hooks *independently* since they don't depend on what comes before / after them: this is what allows you to reason about custom hooks in a way that ignores their implementation
+4. The rules can be easily checked by static linters
+
+The third rule is important because we want to be able to provide custom hooks whose implementations are ""black boxes"": we don't need to know how a hook works to know what it does. The only requirement is when we call custom hooks, we also follow the Rules. It's important that this change (or other changes to hooks; or the introduction of new primitive hooks) do not cause it to break.
+
+The main limitation of these rules is that hooks must be arranged in a line. We'd like to be able to generalize to support *trees* of hooks. In particular, just like React identifies the state for a component by its location within its parents component tree, we'd like to be able to ""relax"" the rules of hooks enough that we can call hooks *conditionally or variably* without breaking any of (1) or (2) or (3) or (4).
+
+# Feature Overview
+
+Allow hooks to be **grouped and keyed**.
+
+The example below demonstrates correct usage of the proposed API:
+
+```js
+import * as React from 'react';
+
+function useLookupMultiple(letters) {
+    const lookups = React.useGroup(keyer => {
+        const values = [];
+
+        const valA = keyer('A', () => {
+            return useLookup('A');
+        });
+        values.push(valA);
+
+
+        for (const letter of letters) {
+            const valLetter = keyer(letter, () => {
+                 return useLookup(letter);
+            });
+            values.push(valLetter);
+        }
+
+        const valB = keyer('B', () => {
+            return useLookup('B');
+        });
+        values.push(valB);
+
+        return values;
+    });
+
+    return lookups;
+}
+```
+
+## New Rules of Hooks
+
+- Hooks still need to follow the old *rules of hooks*
+- `useGroup` is a new, primitive hook which must also obey the existing rules of hooks
+- *but* hooks can be called from one *new* place: the `keyer` function callback obtained from `useGroup`
+
+We'll now go through the 4 properties outlined above and see that they still apply.
+
+## Property 1: Ease of Implementation
+
+Today, React essentially stores an array of ""memory cells"" for primitive hooks. A global counter is used to identify which cell is the ""current"" one, and each primitive hook increments this counter.
+
+To implement `useGroup`, only a small detour is required:
+
+- The `useGroup` memory cell essentially holds the following state: `{key1: memoryCellArray1, key2: memoryCellArray2, key3: memoryCellArray3}`.
+- The passed `keyer` callback first replaces the global memory cell array with the one associated with the provided key; then it calls its passed callback; then it reverts the global memory cell array so that the group can continue
+
+## Property 2: Ease of Syntax
+
+The existing hook syntax is unchanged. The new group syntax is somewhat unwieldier, but the basic concepts still apply: regular function calls (albeit inside callbacks similar to `useEffect` or `useReducer` although run synchronously within the render like the latter rather than the former). The clumsier syntax is actually a benefit, because this feature should be seldom used, except for making certain custom hooks more powerful (see below for the intended use-cases).
+
+## Property 3: Independence
+
+Hooks remain independent from one another. Moreover, since hooks are clearly *grouped* as well as simply keyed, it's easy to tell the scope of keys; in particular, there's no (sensible) way to split a keyed group of hooks across multiple custom hooks (the groups form a clear hierarchy bounded by custom hook scopes), so they can still be understood completely independently.
+
+## Property 4: Easy Linting
+
+Linters would need to be updated in order to support this feature. Luckily, it's fairly easy! The same rules of hooks apply, except that hooks may also be called (at the top level of) the `keyer` callback argument obtained from `React.useGroup`.
+
+# Use Case: The Problem Today
+
+The simplest use-case that demonstrates why keyed hooks would be useful is outlined here. The [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) API allows JavaScript to stream events. We can write a nice custom hook to subscribe to an endpoint in some component:
+
+```js
+export function useEventSourceListener(url, listenCallback) {
+  const listenCallbackRef = React.useRef(listenCallback);
+
+  React.useEffect(() => {
+    // On re-render, the listener should be updated.
+    listenCallbackRef.current = listenCallback;
+  });
+
+  React.useEffect(() => {
+    const source = new EventSource(url);
+    source.onmessage = e => {
+      listenCallbackRef.current(e.data);
+    };
+    return () => {
+      source.close();
+    };
+  }, [url]);
+}
+```
+
+Using it is pretty straight-forward:
+
+```js
+const ExampleComponent = ({id}) => {
+    const [messages, setMessages] = React.useState([]);
+
+    useEventSourceListener(`https://example.com/stream/${id}`, newMessage => {
+        setMessages(current => current.concat([newMessage]);
+    });
+
+    return <ul>{messages.map((msg, index) => <li key={index}>{msg}</li>)}</ul>;
+}
+```
+
+This hook worked great for me, until I realized that a particular event stream that I needed was sharded across multiple URLs!
+
+```js
+const ExampleComponent = ({id}) => {
+    const [messages, setMessages] = React.useState([]);
+
+    const onNewMessage = newMessage => {
+        setMessages(current => current.concat([newMessage]);
+    };
+
+    useEventSourceListener(`https://example.com/stream/${id}/shard-1`, onNewMessage);
+    useEventSourceListener(`https://example.com/stream/${id}/shard-2`, onNewMessage);
+
+    return <ul>{messages.map((msg, index) => <li key={index}>{msg}</li>)}</ul>;  
+}
+```
+
+And now *this* works until it turns out that there are a dynamic number of URLs depending on `id`. Once that happens, you *can't* write this using React unless you're willing to very carefully violate the rules of hooks and also give up on certain maintainability benefits. For example, the following solution ""obeys the rules of hooks"" as far as React can tell at runtime (although it will fail decent lint checks):
+
+```js
+const ExampleComponent = ({id, shards}) => {
+    return <ExampleComponentInternal key={shards.length} id={id} shards={shards} />
+};
+
+const ExampleComponentInternal = ({id, shards}) => {
+    const [messages, setMessages] = React.useState([]);
+
+    const onNewMessage = newMessage => {
+        setMessages(current => current.concat([newMessage]);
+    };
+
+    for (const shard of shards) {
+        useEventSourceListener(`https://example.com/stream/${id}/${shard}`, onNewMessage);
+    }
+    return <ul>{messages.map((msg, index) => <li key={index}>{msg}</li>)}</ul>;  
+}
+```
+
+of course, this solution has a large number of problems:
+
+- if the number of shards changes, then any other state (e.g. forms) stored inside the component get thrown away, since the `key` changed
+- if the shards get reordered, then the connections will be dropped and re-instantiated, since each `useEventSourceListener` call only knows about itself!
+
+These problems can be remedied in turn by the following solution:
+
+```js
+const ListenerComponent = ({url, onNewMessage}) => {
+    useEventSourceListener(url, onNewMessage);
+    return null;
+}
+
+const ExampleComponent = ({id, shards}) => {
+    const [messages, setMessages] = React.useState([]);
+
+    const onNewMessage = newMessage => {
+        setMessages(current => current.concat([newMessage]);
+    };
+
+    for (const shard of shards) {
+        useEventSourceListener(, onNewMessage);
+    }
+    return <>
+        {shards.map(shard => <ListenerComponent url={`https://example.com/stream/${id}/${shard}`} key={shard} />)}
+        <ul>{messages.map((msg, index) => <li key={index}>{msg}</li>)}</ul>
+    </>;
+}
+```
+
+This solution finally works in React today. Unfortunately, that stops being true if instead `useEventSourceListener` returns any useful value: there's no way to (synchronously) pass a returned value up from those `ListenerComponent`s into `ExampleComponent`. Using refs and `useLayoutEffect` you can kinda fake this, but in particular there's no way to pass those values into subsequent hooks, because hooks can't be called inside `useEffect` or `useLayoutEffect` callbacks.
+
+
+# Use Case: The Solution
+
+Using keyed hooks, we simply get:
+
+```js
+const ExampleComponent = ({id, shards}) => {
+    const [messages, setMessages] = React.useState([]);
+
+    const onNewMessage = newMessage => {
+        setMessages(current => current.concat([newMessage]);
+    };
+
+    React.useGroup(keyer => {
+        for (const shard of shards) {
+            keyer(shard, () => {
+                useEventSourceListener(`https://example.com/stream/${id}/${shard}`, onNewMessage);
+           });
+        }
+    });
+    return <>
+        <ul>{messages.map((msg, index) => <li key={index}>{msg}</li>)}</ul>
+    </>;
+}
+```
+
+Just like components, we only need to distinguish our hooks calls among *siblings* with `keyer`. Since `useEventSourceListener` is itself already robust against changes to the URL, we don't need to include `id` inside `keyer`'s key argument.
+
+# General Rationale
+
+The general rationale behind this approach is to provide better composition of *custom* hooks. One workaround for the above approach is to create a new `useMultipleEventSourceListener(urls, callback)`, but this approach has several major drawbacks:
+
+- First, the implementation is very complicated. The main appeal of hooks like `useEffect` is that they encapsulate all aspects of one feature: initialization and cleanup go together. Implementing `useMultipleEventSourceListener`, while possible, doesn't let us take advantage of this because we're stuck with doing all initialization / teardown / diffing of values ourselves, since React can no longer do it for us.
+
+- Second, it's not compositional. Why *should* I have to *re-implement* a complex function when a simple loop ought to suffice? In particular, it's at least plausible to implement `useMultipleEventSourceListener` because here I've written the original myself, but if the custom hook comes from some third party then it's no longer feasible to fork and implement a ""multiple"" version myself
+
+- Lastly, it makes nesting custom hooks inside each other non-compositional. Even if I implement and maintain a `useMultipleEventSourceListener`, if I want to call *that* hook multiple times, I'm out of luck; instead I need Consider the case where I find I have multiple calls to `useMultipleEventSourceListener`; in order to be able to handle *that*, I would need to be able to 
+
+# Semantics in Detail
+
+I glossed over several minor semantic details that need to be covered:
+
+## What happens to `useState`/`useReducer` when their keys change?
+
+If the key is ""new"" (i.e. **was not present** on the *previous* render) then the state is copied from the ""initial"" argument.
+
+If the key is not ""new"" (i.e. it **was present** on the *previous* render) then the state is whatever was previously stored.
+
+Basically, if a key disappears and reappears later, the old state was lost. This is just like how components with `key` props behave (whether they're using class `state` or functional `useState`).
+
+## What happens to `useEffect`/`useLayoutEffect` when keys change?
+
+If the key ceases to exist, then the cleanup code gets called (just like if the component unmounted).
+
+This is simple, consistent, and easily understood. Again, it's just like putting the hooks inside children with `key` props that disappear. If hooks work in those situations, they'll likely work here as well.
+
+## What happens to `useRef` when keys change?
+
+The reference is fresh every time the key is ""new"". In particular, if a key disappears and reappears, the old `current` value is lost.
+
+## What happens to `useContext`?
+
+Nothing, `useContext` doesn't actually need memory cells at all.
+
+## What happens to `useDebugValue`?
+
+The debug value can be listed alongside the key which it lies under.
+
+## What happens if the order of keys changes?
+
+Not much - since hooks are independent of each other (property 3 above) it doesn't (or shouldn't) matter what order they're called as long as the memory cell array is updated appropriately. The call order should always match the order they're called inside `useGroup`.
+
+## What happens if the same key is used twice?
+
+There are two obvious approaches:
+
+- Make this an error (or an error-in-debug mode, much like having multiple children with the same `key` prop today)
+- Make subsequent calls a no-op
+
+The latter option is occasionally more convenient but potentially very unsafe. The former is much better (especially because if it errors today, it can be changed to have alternative behavior in the future).
+
+## What happens if you call hooks inside `useGroup` but not inside a `keyer` callback?
+
+This causes an implementation-defined error, just like other misuses of keys or hooks today. The rules of hooks let you call hooks inside `keyer` callbacks, but not inside the `useGroup` callback.
+
+## What happens if `keyer` escapes from the `useGroup` callback and gets called later?
+
+This causes a best-effort implementation-defined error, just like other misuses of hooks today (e.g. as if you call `useState` inside of an event callback).
+
+# Conclusion
+
+React hooks are really nice 🥇. There's just a few edge cases like the above where they don't quite cut it - providing keyed hooks would just make writing and using custom hooks that much nicer, and solve tons of issues that are currently just-out-of-reach in maintainable, easily-understood ways.",Feature
+16006,1.0,Support,16006,[eslint-plugin-react-hooks]: auto-fix may crash app when deps is array/object types,CONTRIBUTOR,"**Do you want to request a *feature* or report a *bug*?**
+bug
+**What is the current behavior?**
+
+before run lint, my code is
+
+```js
+const App = () => {
+  const [options, setOptions] = useState([]);
+  const [includesA, setIncludesA] = useState(false);
+
+  const optionCodes = options.map(({ value }) => value);
+
+  useEffect(() => {
+    if (optionCodes.includes('A')) {
+      setIncludesA(true);
+    }
+  }, [optionCodes.join(',')]); // transform array to string for compare 
+
+  return <div onClick={() => setOptions([{ value: 'A' }])}></div>;
+};
+
+```
+after 'eslint --fix'
+
+```js
+
+const App = () => {
+  const [options, setOptions] = useState([]);
+  const [includesA, setIncludesA] = useState(false);
+
+  const optionCodes = options.map(({ value }) => value);
+
+  useEffect(() => {
+    if (optionCodes.includes('A')) {
+      setIncludesA(true);
+    }
+  }, [optionCodes]); // optionCodes.join(',') was replaced ! 
+
+  return <div onClick={() => setOptions([{ value: 'A' }])}></div>;
+};
+```
+The original code works fine and after 'eslint --fix' it just crashed cuz `optionCodes` **is an array** created in render function, the effect runs every time and crash my app with error :
+
+> react-dom.development.js:55 Uncaught Invariant Violation: Maximum update depth exceeded.
+
+I've also notice this rule fix will add other params used by effect function to deps automatically. Like
+
+```js
+// original code
+const {id} = props
+useEffect(()=> {
+  console.log(id)
+},[])
+
+// after fix
+const {id} = props
+useEffect(()=> {
+  console.log(id)
+}, [id]) // id has been add to deps
+```
+
+
+**What is the expected behavior?**
+
+For 'eslint --fix', what we expect is 'try to fix lint error automatically and **SAFELY**', SAFELY means **DO NOT change my code logic**, run 'eslint --fix' should never change your design or crash your app .
+
+It would be better to tell developers to fix the deps by lint message, not auto fix it in dangerous way.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+eslint-plugin-react-hooks@1.6.1",Bug
+16083,1.0,Support,16083,React ref incorrectly reports 0 height in production.,NONE,"**Do you want to request a *feature* or report a *bug*?**
+Bug
+**What is the current behavior?**
+ImageViewer.js:
+```
+class ImageViewer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { gotSize: false };
+    this.containerRef = React.createRef();
+  }
+
+  componentDidMount() {
+    // get zero here, only in production and only on the first run after refresh
+    console.log(this.containerRef.current.clientHeight);
+    this.setState({ gotSize: true });
+    ...
+  }
+  ...
+  render() {
+    const { gotSize } = this.state;
+
+    return (
+         ...
+        <div className={scss['canvas-container']} ref={this.containerRef}>
+          {gotSize && <Canvas containerRef={this.containerRef} />}
+        </div>
+        ...
+    );
+  }
+};
+```
+My css in container basically a box of width:100% and height: 100%, and it takes the full size in the inspector
+Canvas.js:
+```
+class Canvas extends React.Component {
+  constructor(props) {
+    super(props);
+    this.updateDimensions = this.updateDimensions.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
+  }
+
+  updateDimensions() {
+   ...
+   // and of course zero here, but only on the first run
+   // after refresh, if I close and open the component the second time it works fine
+    const rect = this.props.containerRef.current.getBoundingClientRect(); 
+    ...
+  }
+
+  render() {...}
+}
+```
+**What is the expected behavior?**
+Get the correct height
+env:
+production: default create-react-app script `""react-app-rewired build""`
+macOS High Sierra 10.13.6
+Chrome Version 75.0.3770.100 (Official Build) (64-bit)
+""react"": ""^16.8.6""
+""react-dom"": ""^16.8.6""",Other
+16093,1.0,Support,16093,onClick not firing,NONE,"I can't seem to get the onClick event to fire at all. I've reduced my app to the following file: 
+
+index.js:
+```
+import React from 'react'
+import { render } from 'react-dom'
+
+const Index = () => {
+  console.log('rendered')
+  return <button onClick={() => console.log('hello')}>test</button>
+}
+
+render(
+  <Index />,
+  document.getElementById('app')
+)
+```
+I get 'rendered' output to the console, but nothing when I click on the button.
+
+package.json:
+```
+{ 
+...
+devDependencies {
+    ...
+    ""react"": ""^16.8.4"",
+    ""react-dom"": ""^16.8.4"",
+     ...
+}
+...
+}
+```
+building inside a Laravel 5.2 app via: 
+`browserify -t [ babelify --presets [ react es2015 ] ] resources/js/react/index.js -o public/js/test.js`
+",Other
+16203,1.0,Support,16203,After redirecting React is re rendered and send back to the cached login IE11,NONE,"I'am struggling to find a quick solution to my problem , because clients are complaining about that the Site cannot be rendered on the IE . I have done a little research and i came across this `react-app-polyfill/ie11` .
+I have insert it as an entry point on mine `src/index.js` It have worked i saw my project ( only the login tho ) working on IE 11 , but after the login it is redirected again back to the login page . The error that IE throws back is :
+`DOM7011 : The code on this page disabled back and forward caching.`
+`Unhandled promise rejection TypeError: Unable to get property 'data' of undefined or null reference`
+
+After a while i came also across this :
+https://reactjs.org/docs/javascript-environment-requirements.html
+
+The new JavaScript Environment Requirements . Bassicly they suggest to enable as an entry point on your `index.js` this
+`import 'core-js/es/map'; import 'core-js/es/set';`
+
+So far i have no clue what is going on , but still the app is not running properly on IE . Can somebody give me some advice what to do ?
+
+**UPDATED**
+Login.js
+
+```jsx
+export default class Login extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      translations: EN_TRANSLATIONS,
+      clientNumber: """",
+      password: """",
+      redirectToReferrer: """",
+      loginErrorMessage: """",
+      lockedUntilDate: """"
+    };
+  }
+
+  async componentWillMount() {
+    let tenant = window.location.hostname;
+
+    axios
+      .post(SERVER_URL + ""/api/user/page"", {
+        tenant: tenant
+      })
+
+      .then(response => {
+        localStorage.setItem(""page"", JSON.stringify(response.data.branding));
+        localStorage.setItem(""tenant"", tenant);
+
+        this.setState({
+          branding: response.data.branding,
+          tenant: tenant,
+          pageReady: true
+        });
+      });
+  }
+
+  login = () => {
+    axios
+      .post(SERVER_URL + ""/api/user/access"", {
+        tenant: this.state.tenant,
+        customerNumber: parseInt(this.state.clientNumber),
+        password: sha1(this.state.password + FE_SALT)
+      })
+      .then(response => {
+        localStorage.setItem(""token"", response.data.token);
+        localStorage.setItem(""access"", JSON.stringify(response.data.branding));
+
+        this.setState({
+          branding: response.data.branding,
+          accessReady: true
+        });
+
+        if (this.state.accessReady) {
+          if (response.data.passwordValidity >= 0) {
+            Auth.authenticate(response => {
+              this.setState({ redirectToReferrer: ""dashboard"" });
+            });
+          } else {
+            Auth.authenticate(response => {
+              this.setState({ redirectToReferrer: ""changePassword"" });
+            });
+          }
+        }
+      });
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+  };
+
+  render() {
+    const {
+      redirectToReferrer,
+      translations,
+      notValidTenant,
+      branding
+    } = this.state;
+    if (redirectToReferrer === ""dashboard"") {
+      return (
+        <Switch>
+          <Route
+            render={() => <Redirect to={`/dashboard/${Auth.customerId}`} />}
+          />
+        </Switch>
+      );
+    } else if (redirectToReferrer === ""changePassword"") {
+      return (
+        <Switch>
+          <Route
+            render={() => (
+              <Redirect to={`/change_password/${Auth.customerId}`} />
+            )}
+          />
+        </Switch>
+      );
+    }
+  }
+}
+```
+
+index.js
+
+```jsx
+import ""react-app-polyfill/ie9"";
+import ""react-app-polyfill/ie11"";
+import ""react-app-polyfill/jsdom"";
+
+import React from ""react"";
+import ReactDOM from ""react-dom"";
+import App from ""./App"";
+import { BrowserRouter } from ""react-router-dom"";
+
+ReactDOM.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  document.getElementById(""root"")
+);
+```
+
+Also i marked that i cannot import `'react-app-polyfill/stable'` i think this should work , but i am not sure .
+
+**UPDATE**
+I have deleted the `node_modules` and installed again `react-app-polyfill` . Now the `'react-app-polyfill/stable'` is recognized , but i ran into another error .
+`SCRIPT438: Object doesn't support property or method 'repeat'` ... This IE is making me crazy ...
+
+**UPDATE**
+Okey so i was able to delete my private routes and make every route after the login visible `<Route/>` . If i hardcode the URL path and disable the security i can get access to my dashboard page . So that gives me thinking that the problem is coming from the `<Redirect/>` component . Because he is the only one standing between the login and the dashboard . Any suggestion why is this conflict between `IE` and `<Redirect/>` ???
+",Other
+16305,1.0,Support,16305,Different Suspense Behavior in ReactDOM.render vs React.createRoot().render,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+
+bug
+
+**What is the current behavior?**
+
+Throwing a resolved promise inside an app mounted with `React.unstable_createRoot().render()` triggers the suspense fallback render, defocusing inputs in the app.
+
+In contrast, throwing an immediately resolved promise inside the same app rendered with  `ReactDOM.render()` does not trigger the suspense fallback render.
+
+Here's a small reproduction showing the different behaviors: 
+```javascript
+import React from ""react"";
+import ReactDOM from ""react-dom"";
+
+let cache = {};
+
+function MyApp() {
+  let [text, setText] = React.useState(""edit this"");
+
+  if (!cache[text]) {
+    cache[text] = true;
+    throw Promise.resolve();
+  }
+
+  return <input value={text} onChange={e => setText(e.target.value)} />;
+}
+
+let fallback = <div style={{ background: ""red"" }}>fallback</div>;
+let dom = (
+  <React.Suspense fallback={fallback}>
+    <MyApp />
+  </React.Suspense>
+);
+
+// Switch out the following two lines and type in the input
+// to see the difference in behavior
+
+ReactDOM.unstable_createRoot(document.getElementById(""root"")).render(dom);
+// ReactDOM.render(dom, document.getElementById(""root""));
+
+```
+
+Here's a CodeSandbox with the code above: https://codesandbox.io/s/stupefied-cookies-qh8sy
+
+
+
+**What is the expected behavior?**
+
+Throwing an immediately resolved promise inside an app mounted with `React.unstable_createRoot().render()` should not trigger the suspense fallback render. Instead, it should behave identically to the app mounted with `ReactDOM.render()`.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+I'm using Chrome 75.0.3770.142, macOS 10.14.3, and react 16.9.0-alpha-0
+
+N.B. This issue is pretty much the same as #15900, though that one seemed to have more moving parts. Please merge these if appropriate.",Other
+16370,1.0,Support,16370,useEffect does not get executed again after 16.8.0-alpha1,NONE,"**Do you want to request a *feature* or report a *bug*?**
+It is a bug
+
+**What is the current behavior?**
+As seen in this [codepen](https://codesandbox.io/s/react-hooks-playground-k8hxy), the useEffect gets updated every 500ms as expected and mentioned in the docs:  
+
+> Does useEffect run after every render? Yes! By default, it runs both after the first render and after every update.
+
+But if the react version is updated to a newer version, the timeout is called, the setCounter is called with 1 again (after the second run) which leads to a rerender of the component, but the effect is not executed as expected (2 is not called again and there is no loop).  As mentioned in the docs, use Effect without a second parameter should create a loop by calling the setTimeout again after setCount. But this is not the case for versions above 16.8.0-alpha1. Is this intended or not?
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+This [codepen](https://codesandbox.io/s/react-hooks-playground-k8hxy) works by creating a infinity loop. But updating the react version here 
+![image](https://user-images.githubusercontent.com/17567991/62890380-aa5a1680-bd43-11e9-8f6c-0e026510365a.png)
+
+will break the functionality and will not loop again because the useEffect is note executed if the prevoiusState === currentState. But the component gets rerendered anyway.
+
+If the intended behavior is not the rerender the component if the state is the same, console.log(1) should not be called. So either the useEffect does not work as intended, or it is not intended that  useState triggers a rerender, if the state is the same.
+
+
+**What is the expected behavior?**
+The expected behavior is for the useEffect to be called in a loop even if the state is the same and the functional component is rendered.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+16.8.0-alpha1 works, version above it do not.
+
+Thanks for your time and I really enjoy coding with React. Keep it up.",Other
+16419,0.0,Other,16419,DevTools: react-devtools-tutorial.now.sh > editing-props-and-state have a bad state,NONE,"I don't know who's making the bug, so reporting here. I'll move to correct repo if someone helps me debug it.
+**Do you want to request a *feature* or report a *bug*?**
+Bug
+**What is the current behavior?**
+Please watch below screencast:
+https://drive.google.com/file/d/1KMP44qsZ4y3MwrLLDdnOzPZ8z5mMElFP/view
+
+1. Goto https://react-devtools-tutorial.now.sh/editing-props-and-state
+2. Change the last ListItem prop to isComplete from `false` to `true`.
+3. Click the checkbox in the view to change the state again from `true` to `false`.
+**What is the expected behavior?**
+It should just change the state of that ListItem. Instead, it's adding 3 more in the list with duplicate keys.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+Latest React.
+Mac, Chrome Version 75.0.3770.142 (Official Build) (64-bit)
+",Bug
+16420,1.0,Support,16420,React Router + Lazy + Suspense (CSS not loaded correctly on IE11),NONE,"**Do you want to request a *feature* or report a *bug*?**
+Bug.
+
+**What is the current behavior?**
+I use react-router with *lazy* and *suspense* to lazy load routes and chunck my bundle (large application).
+
+_Chrome :_
+Everything work perfect : css loaded, good display and bundle chunks.
+
+_IE 11:_
+I get a bad display : wrong css margin, dimensions, sizes, colors, css vars not loaded...
+I get my bundle chuncks.
+If I refresh the page (or F5) I get the correct display.
+If I remove *lazy* I have the correct display.
+
+```javascript
+const MyPage = (
+  lazy(() => (
+        import('./path/MyPage')
+  ))
+);
+
+<Router>
+      <Suspense fallback={<div />}>
+        <Switch>
+          <Route path=""./my-page"" component={MyPage} />
+        </Switch>
+      </Suspense>
+</Router>
+```
+
+**What is the expected behavior?**
+Same result on IE and Chrome.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+
+Browser affected: IE11.
+React version : 16.8.6
+React Router Dom : 5.0.1.
+
+Thanks.",Other
+16957,0.0,Other,16957,Webkit inline styles dissapears in Firefox,NONE,"**Do you want to request a *feature* or report a *bug*?**: *bug*
+
+**What is the current behavior?**
+Missing `-webkit-print-color-adjust: exact;` in Firefox
+
+**Demo**:
+1. Run https://stackblitz.com/edit/react-skxixb in Firefox and Chrome
+2. Check CSS for `.header`
+
+**What is the expected behavior?**
+`-webkit-print-color-adjust: exact;` should be placed in all browsers
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+React 16.9.0 and 16.10.1
+Windows 10
+Firefox 69.0.1",Bug
+17060,1.0,Support,17060,"'exhaustive-deps' lint rule warns that ""Outer scope values"" aren't valid when a hook is inside a function",NONE,"**Do you want to request a *feature* or report a *bug*?**
+Bug
+
+**What is the current behavior?**
+Inside a functional component, an inner function with a dependency on value from an outer function triggers the warning, ""Outer scope values like '....' aren't valid dependencies because mutating them doesn't re-render the component.""
+
+See: https://codesandbox.io/s/custom-hook-repro-3wfly
+
+Here's the crux of the problem
+
+```tsx
+const List = (props: IListProps) => {
+  const { items } = props;
+
+  // Using the useMemo hook here doesn't complain, e.g. -
+  // const names = useMemo(() => items.map(item => item.name), [items]);
+
+  // Using the useMemo hook inside a function complains
+  const names = useItemNames();
+
+  return (
+    <>
+      <h2>There are {items.length} items in the list</h2>
+      <section>
+        {names.map(name => (
+          <div>{name}</div>
+        ))}
+      </section>
+    </>
+  );
+
+  ////////////////////
+
+  function useItemNames() {
+    // es-lint warns here: Outer scope values like 'items' aren't valid dependencies 
+    // because mutating them doesn't re-render the component
+    return useMemo(() => items.map(item => item.name), [items]);
+  }
+};
+```
+
+**What is the expected behavior?**
+The eslint rule shouldn't be triggered.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+* React v16.10.2
+* So far as I can tell, this hasn't worked previously.",Other
+17332,1.0,Support,17332,"useTransition: After startTransition, it does not react to passed props changes",NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?**
+Probably a bug
+**What is the current behavior?**
+After firing startTransition, ""current"" component stops reacting to passed props changes while reacting to local state changes.
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:**
+
+In the following CodeSandBox, `count` is counting up in the parent component using `setInterval` but if we click ""CLICK ME"", it suddenly stops updating.
+https://codesandbox.io/s/usetransition-stop-reacting-passed-props-updates-p9k1b
+
+**What is the expected behavior?**
+When passed props change, it should show the latest value of it where possible
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?**
+Experimental build (0.0.0-experimental-5faf377df)",Bug
+17511,1.0,Support,17511,CSS Not Being Applied (or Overwritten?) Route Based Code Splitting,NONE,"<!--
+  Note: if the issue is about documentation or the website, please file it at:
+  https://github.com/reactjs/reactjs.org/issues/new
+-->
+
+**Do you want to request a *feature* or report a *bug*?** Bug
+
+**What is the current behavior?** 
+
+At our website, we have a branch where we're converting to route based code splitting to reduce bundle sizes. The issue now is that our global `index.scss` properties aren't be applied to the lazy loaded modules. This is breaking things like our font faces / `<a>` tag styling.
+
+```ts
+// routes.ts BEFORE
+import Home from '../components/home');
+
+const Routes: React.FC = () => (
+    <Switch>
+      // ...
+      <Route exact path=""/"" component={Home} />
+      <Redirect from=""*"" to=""/"" />
+    </Switch>
+);
+```
+```ts
+// routes.ts AFTER
+const Home = lazy(() => import('../components/home'));
+
+const Routes: React.FC = () => (
+  <Suspense fallback={/*...*/}>
+    <Switch>
+      // ...
+      <Route exact path=""/"" component={Home} />
+      <Redirect from=""*"" to=""/"" />
+    </Switch>
+  </Suspense>
+);
+```
+
+**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem. Your bug will get fixed much faster if we can run your code and it doesn't have dependencies other than React. Paste the link to your JSFiddle (https://jsfiddle.net/Luktwrdm/) or CodeSandbox (https://codesandbox.io/s/new) example below:** 
+
+N/A because of reliance on bootstrap but the [link to the branch](https://github.com/RITesports/Website/tree/route-spliting/react-app/src)
+
+1. Clone Branch
+2. install deps for react-app
+3. npm start
+
+`/teams` wont' work but all of the text is left aligned on the cards and the link are normal blue and underlined (I can provide pictures if needed). You can compare this to the live site  [here](https://www.esportsrit.com).
+
+**What is the expected behavior?** The global css should be applied the same, lazy loaded or not.
+
+**Which versions of React, and which browser / OS are affected by this issue? Did this work in previous versions of React?** All Browsers. No idea on older versions.
+",Other
+17677,1.0,Support,17677,How can i create a dynamic ENum,NONE,"This request asking about existing features supported by ReactJS. I have an enum in use on several reactJS pages(200 implementations across 32 code files). Now the requirement is to make it dynamic. I am not sure how can i achieve it in ReactJS+REDUX implementation. 
+
+I am working on the latest version of ReactJS",Other
+17911,1.0,Support,17911,Bug: startTransition suspends immediately when useLayoutEffect is present,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 0.0.0-experimental-f42431abe
+
+Please note that I do realize my repro steps are poor at best. I'm *not* filing this issue in hopes of support; I'm only filing this issue to provide one more datum point to help diagnose what I believe to be a bug, which I'm assuming you'll see more reports of.
+
+## Steps To Reproduce
+
+tl;dr - there are some circumstances when a thrown promise inside a hook causes an immediate suspense, instead of respecting the startTransition it's inside of.
+
+startTransition for me is always, in this case, called outside of the normal React handlers. In this case history.listen
+
+https://github.com/arackaf/booklist/blob/special/suspense-blog/react/modules/books/booksSearchState.ts#L75
+
+This is my Suspense-enabled hook that's called as a result of the state update inside the code above
+
+https://github.com/arackaf/micro-graphql-react/blob/feature/suspense/src/useQuery.js#L22
+
+the Promise throwing happens here
+
+https://github.com/arackaf/micro-graphql-react/blob/feature/suspense/src/queryManager.js#L116
+
+Here's the specific chain of events that leads to the breakage. 
+
+Things work so long as there's always been an existing promise, for the queryManager to throw, ie line 116 in the code immediately above. But the minute there's cached results, and the queryManager invoke's the hook's setState method (which it passed it), ie line 120 here
+
+https://github.com/arackaf/micro-graphql-react/blob/feature/suspense/src/queryManager.js#L120
+
+then all future suspenses immediately start suspending, and I always get my fallback, always.
+
+The setState method is shared between the hook, and queryManager here
+
+https://github.com/arackaf/micro-graphql-react/blob/feature/suspense/src/useQuery.js#L17
+
+I stress that I do *not* need support, here; this is just a side project, an unimportant one, and this whole branch is only for Suspense experimenting. But something does definitely appear to be wrong, and I'm hoping this report can help you guys find it.
+
+## The current behavior
+
+startTransition only works until the hook's setState is called from the queryManager it creates, at which point startTransition always triggers hard suspenses, showing my fallback.
+
+## The expected behavior
+
+startTransition should never trigger the fallback until the timeout has expired. 
+",Bug
+17927,1.0,Support,17927,Bug: Autocomplete not working for controlled input,NONE,"React version: 16.12.0
+
+## Steps To Reproduce
+1. Have a form with controlled input (i.e. value is set through `onChange` handler)
+1. Type `cheese` into the input
+1. Submit the form
+1. Reload the page
+1. Focus the input, type `c`
+1. `cheese` is *not* suggested
+
+https://codesandbox.io/s/ancient-currying-oqgt6
+
+It works when a uncontrolled input is used (i.e. value is not set by react `onChange` handler)
+1. Have a form with uncontrolled input
+1. Type `cheese` into the input
+1. Submit the form
+1. Reload the page
+1. Focus the input, type `c`
+1. `cheese` is being suggested
+
+https://codesandbox.io/s/naughty-dijkstra-p3n42
+
+It's not about autofilling address data or passwords, but data previously filled in by the user.
+We noticed this issue in Chrome, Firefox and Safari. Even though we could not get any autocompletion to work in Safari, even without React. (We could in Chrome and Firefox)
+
+Thanks!",Bug
+17953,1.0,Support,17953,Bug: useReducer runs the queued updates with new props,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 16.8.0
+
+## Steps To Reproduce
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+Link to code example:
+https://codesandbox.io/s/usereducer-wfcmq Link to codesandbox.
+
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+Initially step is 0. So for every step react does not rerender due to this https://github.com/facebook/react/blob/master/packages/react-reconciler/src/ReactFiberHooks.js#L1347. But state updates are queued. So when `step` changes all the state updates are done and hence creates a bug by adding the new step prop.
+
+https://overreacted.io/a-complete-guide-to-useeffect/#why-usereducer-is-the-cheat-mode-of-hooks",Bug
+18148,2.0,Bug,18148,Bug: No matching version found for scheduler@^0.19.0,NONE,"Error ""No matching version found for scheduler@^0.19.0""  during npm i
+
+React version: 16.8
+
+## The current behavior
+<img width=""558"" alt=""Schermata 2020-02-27 alle 10 44 30"" src=""https://user-images.githubusercontent.com/41707194/75432089-27e71c00-594e-11ea-8998-73366ba262f0.png"">
+
+## The expected behavior
+install works",Other
+18183,1.0,Support,18183,useMutableSource and hydration,COLLABORATOR,"Follow up to PR #18000 and RFC https://github.com/reactjs/rfcs/pull/147
+
+The new `useMutableSource` hook will need at least one additional API to be able to support server rendering and hydration. This API would likely be on the React root (the object returned by `createRoot`) and would enable mutable sources to have their versions eagerly captured before hydration begins.
+
+##### How is the version used?
+
+Currently a work-in-progress version of each mutable source is stored on the source itself. This version enables us to [avoid tearing before a source has been subscribed to](https://github.com/bvaughn/rfcs/blob/useMutableSource/text/0000-use-mutable-source.md#reading-from-a-source-before-subscribing). This version number is lazily populated (the first time a source is read during a given render).
+
+##### How will the version be used during hydration?
+
+In the case of server rendering, this version will need to be eagerly populated for every source so that we can detect tearing between the version of the source used for the server respond, and the version we will eventually read from while hydrating on the client.
+
+##### How will this work?
+
+One way to do this would be to store an array on each React root of mutable source and version number pairs. Each time we start (or resume) hydration, we can iterate through this array and use it to initialize the work-in-progress version for each source.
+
+Once all outstanding hydration work is finished, we can clear the array. (Although this will require an additional change as we do not currently have a way to detect that we've finished all pending hydration work.)",Bug
+18426,1.0,Support,18426,Call all functions twice in StrictMode,COLLABORATOR,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 16.3-16.13
+
+## Steps To Reproduce
+
+1. Render function component with side-effects and without hooks in StrictMode
+2. Component only renders once
+
+
+Link to code example: https://codesandbox.io/s/strictmode-w-and-wo-hooks-vgxvh
+
+
+## The current behavior
+
+StrictMode only renders function components with hooks twice following https://github.com/facebook/react/issues/15074#issuecomment-471197572
+
+
+## The expected behavior
+
+I think making [the distinction between components with and without hooks causes more confusion than it helps](https://github.com/mui-org/material-ui/issues/20313). Especially since the docs do not mention this. I amended [past efforts to improve the StrictMode docs](https://github.com/reactjs/reactjs.org/pull/2515) but since this has been ignored I'm not sure this helps. I would also work on making the behavior consistent across all function component types if this is possible.
+",Feature
+18512,1.0,Support,18512,Bug: dev tools development script is running production build,CONTRIBUTOR,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+**React Dev Tools version**: 4.6.0
+
+I'm not sure there is a problem with `package.json` within`react-devtools-extensions` package, or it's just my misunderstand how it works, but script `build:dev` create production build. 
+Command above runs a each script (per browser) in which `NODE_ENV`  is set to `production`.
+
+## Steps To Reproduce
+
+1. Just run `yarn build:dev` in `react-devtools-extensions`
+2. It creates minified version of files.
+
+
+https://github.com/facebook/react/blob/master/packages/react-devtools-extensions/package.json
+
+```javascript 
+ ""scripts"": {
+    ""build"": ""cross-env NODE_ENV=production yarn run build:chrome && yarn run build:firefox && yarn run build:edge"",
+    ""build:dev"": ""cross-env NODE_ENV=development yarn run build:chrome && yarn run build:firefox && yarn run build:edge"",
+    ""build:chrome"": ""cross-env NODE_ENV=production node ./chrome/build"",
+    ""build:chrome:crx"": ""cross-env NODE_ENV=production node ./chrome/build --crx"",
+    ""build:chrome:dev"": ""cross-env NODE_ENV=development node ./chrome/build"",
+    ""build:firefox"": ""cross-env NODE_ENV=production node ./firefox/build"",
+    ""build:firefox:dev"": ""cross-env NODE_ENV=development node ./firefox/build"",
+    ""build:edge"": ""cross-env NODE_ENV=production node ./edge/build"",
+    ""build:edge:crx"": ""cross-env NODE_ENV=production node ./edge/build --crx"",
+    ""build:edge:dev"": ""cross-env NODE_ENV=development node ./edge/build"",
+    ""test:chrome"": ""node ./chrome/test"",
+    ""test:firefox"": ""node ./firefox/test"",
+    ""test:edge"": ""node ./edge/test""
+  },
+```
+
+## The current behavior
+`""build:dev"": ""cross-env NODE_ENV=development yarn run build:chrome && yarn run build:firefox && yarn run build:edge""` where `build:<browser>` has  `NODE_ENV` set to `production`.
+
+## The expected behavior
+Each step in `build:dev` should be replaced from `build:<browser>` to `build:<browser>:dev`
+
+
+",Bug
+18669,1.0,Support,18669,Add More Fuzz Tests,MEMBER,"There’s some things we don’t have a sufficient coverage of. Currently we catch them from production product bugs but this is not sustainable. We’re hoping some refactors will drastically simplify the model — but nevertheless we should invest in better fuzz test coverage. That’s how we caught similar bugs before at an earlier stage.
+
+One thing we’re lacking coverage for is what happens to Suspense boundaries as updates are dispatched at different priorities in different order, and what happens when we’ve had to yield. We need to verify that Suspense always “wakes up” when Promises are resolved and there’s nothing to be suspended on. We also need to test this in combination with render phase updates. 
+
+Here’s examples of bugs that I want a fuzzer to catch: https://github.com/facebook/react/issues/18657 https://github.com/facebook/react/issues/18020 https://github.com/facebook/react/issues/18486 https://github.com/facebook/react/issues/18357 https://github.com/facebook/react/issues/18353 https://github.com/facebook/react/issues/18644 https://github.com/facebook/react/pull/18412. 
+
+@dubzzz I believe you were interested in this? This would take some effort but would be a major contribution. ",Feature
+18821,1.0,Support,18821,Bug: ARIA Attribute Reflection,NONE,"React version: 16.13.1
+
+## Steps To Reproduce
+
+1. Implement the [gov.uk ""breadcrumbs"" component](https://design-system.service.gov.uk/components/breadcrumbs/) in React.
+2. Use the [ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/#idl-interface) `ariaCurrent` property, as available in Edge 81, Chrome 81, and Safari 13.
+3. See warning:
+   ```
+   Warning: Invalid ARIA attribute `ariaCurrent`. Did you mean `aria-current`?
+   ```
+
+Link to code example: [https://codesandbox.io/s/bold-glitter-lpfpq](https://codesandbox.io/s/bold-glitter-lpfpq?file=/src/App.js)
+
+```jsx
+function Breadcrumbs() {
+  return (
+    <ol>
+      <li>
+        <a href=""/"">
+          Home
+        </a>
+      </li>
+      <li>
+        <a href=""/passports"">
+          Passports, travel and living abroad
+        </a>
+      </li>
+      <li ariaCurrent=""page"">
+        Travel abroad
+      </li>
+    </ol>
+  );
+}
+```
+
+These properties are helpful reflections that will also be followed by implementations of [`aria*Elements` properties](https://w3c.github.io/aria/#reflection) which would eliminate the need for an `id` by every reference. This is _not_ a bug report on the support of those properties, but they are mentioned to present the higher value these properties will have over dash-less shorthands. I would (naively) expect these (more simple) reflections to worthy of support on their own merits of being implemented web standards.
+
+## The current behavior
+
+The `ariaCurrent` property is not applied, an `ariacurrent` attribute is applied, and a warning is displayed in development.
+
+ ```
+ Warning: Invalid ARIA attribute `ariaCurrent`. Did you mean `aria-current`?
+ ```
+
+## The expected behavior
+
+The `ariaCurrent` property is applied.",Other
+18831,0.0,Other,18831,"Error: ""Commit tree does not contain fiber 256. This is a bug in React DevTools.""",NONE,"Describe what you were doing when the bug occurred:
+1. Profiling a slow component
+In a component that rendered 5000 pre tags with single lines of text in them, that has an unrelated controlled text box is the same component that was typed into while profiling. App hung a while and, when it rendered again the error was in the profiler.
+
+---------------------------------------------
+Please do not remove the text below this line
+---------------------------------------------
+
+DevTools version: 4.6.0-6cceaeb67
+
+Call stack: at j (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:40:162825)
+    at N (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:40:161628)
+    at e.getCommitTree (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:40:164582)
+    at ec (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:40:339280)
+    at ci (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:32:59620)
+    at Ll (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:32:109960)
+    at qc (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:32:102381)
+    at Hc (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:32:102306)
+    at Vc (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:32:102171)
+    at Tc (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/main.js:32:98781)
+
+Component stack: in ec
+    in div
+    in div
+    in div
+    in So
+    in Unknown
+    in n
+    in Unknown
+    in div
+    in div
+    in rl
+    in Ze
+    in fn
+    in Ga
+    in _s",Bug
+18997,1.0,Support,18997,Bug: Autofocus prop does not work,NONE,"<!--
+ I am using an input element with autoFocus={true}. The issue is that the input element is not focused on first time but after that each time I navigate to the screen it is auto focused.
+
+This issue is faced when the react web app is opened from a React native Webview (iOS).
+
+Tried different solutions nothing works.
+-->
+
+
+React version: 16.12
+
+## Steps To Reproduce
+
+1. Use this code in a sample project.
+2. Open the link from React Native Webview.
+
+Link to code example:
+
+```js
+const InputField = ({
+  onPaste,
+  disableAddbtn,
+  handleOnChange,
+  refElem,
+  value,
+  onFocus,
+  onBlur,
+  handleAddListItem,
+}) => {
+  const callbackRef = React.useCallback((inputElement) => {
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
+  return (
+    <div className=""search-box"">
+      <div className=""form-item"">
+        <form onSubmit={handleAddListItem}>
+          <input
+            onFocus={onFocus}
+            onBlur={onBlur}
+            autoFocus={true}
+            onPaste={(e) => onPaste(e)}
+            onChange={(e) => handleOnChange(e)}
+            type=""text""
+            maxLength={100}
+            value={value}
+            ref={callbackRef}
+            className=""form-control has-right-button""
+          />
+          <input
+            type=""submit""
+            disabled={disableAddbtn}
+            className=""btn-label""
+            value={en.ADD}
+          />
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default InputField;
+```
+
+## The current behavior
+Doesn't autofocus on first navigation only
+
+## The expected behavior
+Should auto focus on navigation",Other
+19006,1.0,Support,19006,Bug: ReactPartialRenderer function createOpenTagMarkup calls isCustomComponent for every property unnecessarily,NONE,This is a performance issue. Function isCustomComponent is called multiple times for each property of the same component inside of createOpenTagMarkup function (ReactPartialRenderer.js).,Bug
+19151,0.0,Other,19151,React Developer Tool Is not working in my localhost. It was working fine before.,NONE,"Hi Team
+
+I am not able to use the react developer tool extension on my chrome browser, Which was working well before.  I have tried by removing and re adding the extension again. Still the problem persists.
+
+I have attached a screenshot of the tool Icon on browser. I am very new to react Environment. Appreciate your help here.
+
+Thank you.
+
+![image](https://user-images.githubusercontent.com/28383863/84981630-8f6de500-b152-11ea-909f-f386f226d7ee.png)
+",Bug
+19203,1.0,Support,19203,Bug: React slower in production than in dev than in codesandbox,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 16.13.1
+
+## Steps To Reproduce
+
+1. Make a box follow the mouse cursor
+2. There it is (or not)
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+![Performance gif](https://user-images.githubusercontent.com/23149166/85926187-eb94df80-b89d-11ea-9781-3d7c936d91bd.gif)
+I have a peculiar problem, my code runs well in codesandbox, but it doesn't run well in my local build. The only difference between the code in the sandbox and the local build is that the component is nested in a router, everything else is identical.
+
+If I turn on the dev tools' highlighter for what components were re-rendered only the box gets a border as expected
+
+Link to code example: [Code SandBox](https://codesandbox.io/s/mystifying-bas-ninz2?file=/src/lobby_index.jsx)
+
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+Slow and laggy
+
+## The expected behavior
+Same as in the sandbox",Other
+19229,2.0,Bug,19229,CI missing failing tests?,COLLABORATOR,"PR #19222 recently landed with no CI failures, but `ReactDOMServerSelectiveHydration` was definitely broken as a result of this PR (and was subsequently fixed in #19227). This is just a reminder for one of us to dig into why CI didn't catch this failure.",Other
+19747,1.0,Support,19747,Bug: Using opacity as a percentage value in a css file will become 1% in the production build.,NONE,"Using opacity as a percentage value in a css file will become 1% in the production build version, even though in the localhost website it will appear correctly. The way around this is to use a decimal value (ex. 0.95) for opacity.
+
+React version: 16.13.1
+
+## Steps To Reproduce
+
+1. Set a css class to have a percentage opacity value (ex. 95%)
+2. run npm run-scrips build
+3. build version will have incorrect percentage (1%)
+
+code example:
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  opacity: 50%;
+}
+
+
+## The current behavior
+Opacity will change from any percentage value to 1% in app build version.
+
+## The expected behavior
+Opacity will stay the same percentage in build version.
+",Bug
+19861,1.0,Support,19861,"Error: ""child is undefined""",NONE,"Hi! I was developing a next.js app, then I open the dev tools to see the state of some component, and the react dev tools give this error, after a page refresh all when back to normal, I don't know if this is a bug caused by me or is something related to the dev tools itself, so I prefer to report it, if this my fault I'm very sorry for the trouble!
+
+---------------------------------------------
+Please do not remove the text below this line
+---------------------------------------------
+
+DevTools version: 4.8.2-fed4ae024
+
+Component stack: List@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:20924:30
+div
+AutoSizer@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:2786:19
+div
+div
+Tree_Tree@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:26368:45
+div
+div
+InspectedElementContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:26848:18
+OwnersListContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:25520:18
+SettingsModalContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:26139:18
+Components_Components@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:30926:50
+ErrorBoundary@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:27172:33
+PortaledContent@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:27303:27
+div
+div
+ProfilerContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:30463:18
+TreeContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:22538:18
+SettingsContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:23040:22
+ModalDialogContextController@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:28328:18
+DevTools_DevTools@moz-extension://e8970055-c8eb-4403-952e-40ddc0e5c62a/build/main.js:33797:16",Other
+20022,0.0,Other,20022,Bug: useRef forget '()',CONTRIBUTOR,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version:
+
+## Steps To Reproduce
+
+1.
+2.
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+Link to code example:
+https://codesandbox.io/s/dazzling-heyrovsky-18u9w?file=/src/App.js
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+correct execution
+## The expected behavior
+not correct execution
+
+should we do something, such as a warning?To remind us that we forgot about this Brackets",Support
+20070,1.0,Support,20070,"Bug: Property expression of JSXExpressionContainer expected node to be of a type [""Expression"",""JSXEmptyExpression""] but instead got undefined",NONE,"React version: 17.0.0
+Next.js version: 9.5.5
+TypeScript version: 4.0.3
+
+## The current behavior
+
+In a Next.js project using styled-jsx I get the following error across different components that create a `<style jsx>` tag to generate CSS selectors within template literals (or import such styles from a separate file):
+```
+Property expression of JSXExpressionContainer expected node to be of a type [""Expression"",""JSXEmptyExpression""] but instead got undefined
+```
+The error appears as soon as I update `react` and `react-dom` to 17.0.0, all other dependencies remain at the version they have been beforehand.
+
+## The expected behavior
+
+It renders the component as expected without any errors.",Other
+20334,2.0,Bug,20334,Bug: Strange lines in the page,NONE,"When chrome devtools is opened, some strange lines appear in the page and disappear after disable&enable the react extension.
+I'm wondering if there are some bugs on react extension.
+Win10x64 Chrome 87.0.4280.66
+[Chrome issue 83155766](https://support.google.com/chrome/thread/83155766)
+![img](https://storage.googleapis.com/support-forums-api/attachment/thread-83155766-2167922176753088865.jpg)",Support
+20339,1.0,Support,20339,"Improved ""memory leak"" warning",NONE,"Dear React Maintainers,
+
+My proposal to improve the [""memory leak"" warning](https://github.com/facebook/react/blob/e6a0f276307fcb2f1c5bc41d630c5e4c9e95a037/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L3096) has quite a long background, so let me first thank you for keeping React alive and well. You are all fabulous 🎉
+
+### TL;DR
+
+A Promise is not cancellable, so there is 90% chance that no memory leaks will be fixed when a user applies a ""solution"" to this warning from the internet. This warning encourages a pit of failure (more complex code without removing actual memory leaks) and I argue the detection of memory leaks should be changed.
+
+Table of contents: <a href=""#good"">The good</a> (<a href=""#solutions"">Intended Solutions</a>) - <a href=""#bad"">The bad</a> - <a href=""#uncanny"">The uncanny</a> - <a href=""#proposal"">Proposal</a>
+
+# The good <a name=""good""></a>
+
+> Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
+
+There were, obviously, good reasons to introduce this warning in the first place. React can't detect memory leaks directly, so this was the next best thing to detect forgotten imperatively attached DOM event handlers or uncancelled WebAPIs. The warning itself does not list any examples, so let me illustrate with [my own bad example](https://codesandbox.io/s/immutable-sun-fo3nt?file=/src/App.js):
+
+```js
+const [tick, setTick] = useState(0)
+useEffect(() => {
+  setInterval(() => setTick(t => t+1), 1000)
+}, [])
+```
+
+And the intention of the warning is to gently guide the developer to figure out, on their own, what cleaning up means. 
+
+## Intended Solutions <a name=""solutions""></a>
+
+Let me list a few ideas how I think the memory leaks should be solved.
+
+For the *setInterval* (or *setTimeout*):
+
+```js
+const [tick, setTick] = useState(0);
+useEffect(() => {
+  const interval = setInterval(() => setTick(t => t + 1), 1000)
+  return () => clearInterval(interval)
+}, []);
+```
+
+*Aborting a fetch*:
+
+```js
+const [data, setData] = useState(null);
+useEffect(() => {
+    const {signal, abort} = new AbortController()
+    fetch('...', {signal}).then(r => r.json()).then(setData)
+    return abort
+}, []);
+```
+
+Replacing closure references to the dispatch function inside `.then(...)` when *dealing with an uncancellable Promise*:
+
+```js
+const [data, setData] = useStateIfMounted(null)
+useEffect(() => {
+  myGenericPromise.then(setData)
+}, [])
+
+...
+
+function useStateIfMounted(initialValue) {
+  const [state, setState] = useState(initialValue)
+  const setterRef = useRef(setState)
+  const setterIfMounted = useCallback((...args) => setterRef.current(...args), [])
+  useEffect(() => {
+    return () => {
+      setterRef.current = () => undefined
+    }
+  }, [])
+
+  return [state, setterIfMounted]
+}
+```
+
+Note the last one is basically recreating the `no-op` done internally by React (if my understanding is in the right ballpark).
+
+# The bad <a name=""bad""></a>
+
+Now, the same buggy code causes a [completely different warning in tests](https://github.com/facebook/react/blob/e6a0f276307fcb2f1c5bc41d630c5e4c9e95a037/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L3354) (at least in most cases I checked, not sure if always):
+
+>  Warning: An update to MyComponent inside a test was not wrapped in act(...).
+
+Let's ignore that for a second and try to analyze the solutions that developers can find for the ""memory leak"" problem on the internet. 
+
+1.) `isMounted` variants, like in most of the top answers on [StackOverflow](https://stackoverflow.com/search?tab=votes&q=%22perform%20a%20React%20state%20update%20on%20an%20unmounted%20component%22) or various learning materials such as Kent's [useSafeDispatch](https://github.com/kentcdodds/advanced-react-hooks/blob/560980b10fd10e66fcf5e4f5b4b90bf46cb5fc7b/src/utils.js#L3)
+
+=>❌ These solutions only address the warning, not solving any memory leaks (presumably, they focus on making the warning go away if it's a false positive). The code is more complex without any benefit. An example of shutting up the warning without solving the leak:
+
+```js
+const [tick, setTick] = useState(0)
+const isMounted = useRef(true)
+useEffect(() => {
+  setInterval(() => isMounted && setTick(t => t+1), 1000) // ❌ please don't run infinite intervals at home
+  return () => isMounted.current = false
+}, [])
+```
+
+2.) fake cancellation like at the end of [isMounted is an Antipattern](https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html) or the cancel method from the [react-async library](https://github.com/async-library/react-async/blob/129385c7477c9c6b5ad9c4ea96220779478a1ff6/packages/react-async/src/useAsync.tsx#L230-L231)
+
+=>❌ These look like valid solutions on a first look, but they actually leave the closure references untouched, so not solving any memory leaks either. JS Promise is simply not cancellable (yet?), and no amount of sophistication will allow garbage collection of closures of the function used for the `.then(...)` callback while the Promise is still pending - it is not possible to modify the original Promise, only to create a new Promise. The code is much more complex without any benefit. (see <a href=""#uncanny"">The uncanny</a> section for details)
+
+3.) real cancellation like https://stackoverflow.com/a/54964237/1176601
+
+=>✔ Aborting a fetch request and other operations that enable garbage collection.
+=>❌ But it's very hard to figure it out from the available advice - ""memory leaks"" is not the best documented topic for JavaScript...
+
+# The uncanny <a name=""uncanny""></a>
+
+My statement about fake cancellations (2. above) could be controversial, so let me elaborate:
+
+As far as I can tell, the `makeCancellable` utility from the end of https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html as well as _all_ proposed solutions in https://github.com/facebook/react/issues/5465 , https://github.com/reactjs/reactjs.org/issues/1082 and https://github.com/facebook/react/issues/15006 suffer from the same memory leaks as a naive solution would:
+
+```js
+// naive
+const [value, setValue] = useState()
+useEffect(() => {
+  myPromise.then(setValue)
+}, [])
+```
+
+This naive solution can trigger the warning (as a race condition during unmount), while the complicated solutions won't. Both leak the exact same amount of memory references - functions that we know will never be used but the JS engine cannot garbage collect - because a closure reference to them still exists.
+
+Let me illustrate on a modified example that can be executed in the console => the `cancelablePromise` will be rejected after 2 seconds, so the reference from `then` to the function that was a value of the `setValue` variable will exist for exactly as long as in the naive solution:
+
+```js
+const cancelablePromise = makeCancelable(
+  new Promise(r => setTimeout(r, 2000))
+);
+const setValue = () => undefined
+
+cancelablePromise
+  .promise
+  .then(setValue)
+  .catch((reason) => console.log('isCanceled', reason.isCanceled));
+
+cancelablePromise.cancel(); // Cancel the promise
+
+function makeCancelable(promise) {
+  let hasCanceled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then(
+      val => hasCanceled_ ? reject({isCanceled: true}) : resolve(val),
+      error => hasCanceled_ ? reject({isCanceled: true}) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled_ = true;
+    },
+  };
+};
+```
+
+As for the `cancel` method in https://github.com/async-library/react-async/blob/129385c7477c9c6b5ad9c4ea96220779478a1ff6/packages/react-async/src/useAsync.tsx#L230-L231, that is even more complicated, but my intuition says that a reference to `dispatch` will continue to exist after `cancel()` as long as the `promiseFn` is pending - because the `cancel` function does not clear `lastPromise.current`...
+
+# Proposal <a name=""proposal""></a>
+
+## Option 1: small tweak
+
+How about flipping [this condition](https://github.com/facebook/react/blob/e6a0f276307fcb2f1c5bc41d630c5e4c9e95a037/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L3121) `if (didWarnStateUpdateForUnmountedComponent.has(componentName)) return;` the other way round? If some code tries to update the state of an unmounted component just once, ignore it.
+
+Sweep the little insignificant memory leak under the carpet (remember, I argue that it is more likely that an attempt to fix the warning will NOT fix any memory leaks, so remaining quiet is not such a bad option and the memory will be freed at the same time with or without this warning - but the user code will be much simpler if they don't attempt to fix this warning).
+
+On the other hand, if the state update happens repeatedly after the unmounting (e.g. setInterval or observable stream), that is a very clear signal that the memory leak is more serious => the warning is much more useful in this situation. It might require some re-wording + a link to examples how to fix it correctly.
+
+However, I am not sure about the related `not wrapped in act(...)` warning in tests. Changes to one warning might require synchronization of both warnings for consistency...
+
+## Option 2: detect the memory leaks in Dev Tools
+
+In an ideal world, it should be possible to trigger browser garbage collection from inside React Dev Tools code in all supported browsers. That might not be the case in the real world, but please stay with me for 1 more minute: both supported browsers are open source and they both expose the tools to trigger garbage collection in GUI => some API must exist and it should be possible to expose it in a browser extension.
+
+Now, if React Profiler could trigger GC reliably after pressing the stop profiling button, then we can use an array of [WeakRef](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef)s to find all references to the dispatchers (or other objects) of unmounted components that leaked in some closure somewhere. Pseudocode:
+
+```js
+const zombies = []
+
+function unmountComponent(node) {
+  dispatchZombies.push(new WeakRef(node))
+}
+
+function stopProfiling() {
+  gc()
+  warningAboutZombies.nodes = zombies.map((ref => ref.deref()).filter(Boolean)
+}
+```
+
+## Option 3: React.getZombies()
+
+Expose some method to get a list of ""undead zombie references"" in tests, that would be available when running in Node with the `--expose-gc` flag...",Other
+20450,0.0,Other,20450,Bug: Trailing Comma in Arrays and Dict,NONE,"The learn react tic tac toe game tutorial shows a trailing comma at the end of dictionary values. This is known to cause issues with Internet Explorer. Hoping you can change that.
+
+https://stackoverflow.com/questions/5139205/javascript-can-a-comma-occur-after-the-last-set-of-values-in-an-array
+
+React version:  LTS
+
+## Steps To Reproduce
+
+1. Run tic tac toe tutorial code
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+Link to code example:
+
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+Internet Explorer throws weird errors
+
+## The expected behavior
+Internet Explorer loads the tic toe game without any ussyes",Support
+20590,1.0,Support,20590,"Bug: react-test-renderer provides no equivalent to attachTo option of Enzyme, mandatory to snapshot Leaflet and other",NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 16.13.1
+
+## Steps To Reproduce
+
+1. In a project with React, and react-leaflet@2.7.0
+2.
+```ts
+import React from ""react"";
+import Renderer from ""react-test-renderer"";
+import { Map, TileLayer } from ""react-leaflet"";
+
+let component = Renderer.create(
+    <Map>
+      <TileLayer
+        attribution='&copy; <a href=""http://osm.org/copyright"">OpenStreetMap</a> contributors'
+        url=""https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png""
+      />
+    </Map>
+  );
+```
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+Link to code example: https://codesandbox.io/s/react-test-renderer-leaflet-mohzp
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+
+It raise an error `Map container not found.`
+
+## The expected behavior
+
+Enzyme's `attachTo` option allow to mount the comment in a more realistic environment, which fixes this bug. But there is no equivalent feature in `react-test-renderer` as far as I know.
+
+See https://github.com/PaulLeCam/react-leaflet/issues/246 for more info about the Enzyme fix for this issue.
+
+It should render the map as expected.",Other
+20841,2.0,Bug,20841,Mixin rewrite with React and Higher-order-functions,NONE,"@gaearon How would you re-write the following mixins?
+
+https://github.com/gerobit/ivis-core/blob/a51154c8937d4d392f20303caeb8b450ecf9189a/client/src/lib/decorator-
+helpers.js",Support
+21026,1.0,Support,21026,"Bug: DevTools built-in hook number badges are broken for ""light"" theme",COLLABORATOR,"I mostly use the ""dark"" theme which these badges looked good in. The ""light"" theme is broken though. No contrast.",Bug
+21371,1.0,Support,21371,Bug: calling calling `setState` twice inside `useEffect` creates extra function calls,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 17.0.2
+
+## Steps To Reproduce
+
+1. Create a function component
+2. Call 2 `setState` functions inside a `useEffect` hook.
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+```tsx
+import { FC, useEffect, useState } from 'react'
+
+const resolvedPromise = Promise.resolve()
+
+const Test: FC = () => {
+  const [a, setA] = useState(2)
+  const [b, setB] = useState(0)
+
+  useEffect(() => {
+    let canceled = false
+
+    resolvedPromise.finally(() => {
+      console.log(a, b, canceled)
+      if (canceled) return
+      if (a > 0) {
+        setA(a - 1)
+        setB(b + 1)
+      }
+    })
+
+    return () => {
+      canceled = true
+    }
+  }, [a, b])
+
+  return null
+}
+```
+
+Link to code example: https://codesandbox.io/s/react-bug-606s4?file=/src/App.tsx
+
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+- `b` ends up being `1`.
+- There is an extra function call when `a` is `1` and `b` is `0`. I think this is after `setA(a - 1)` but before `setB(b + 1)`.
+- The function call with `1 0 false` was not canceled.
+- The function call with `1 1 true` was canceled.
+
+Current console output:
+```
+2 0 false
+1 0 false 
+1 1 true
+0 1 false
+```
+## The expected behavior
+- `b` ends up being `2`
+- No extra function call in between `setA()` and `setB()`
+
+Expected console output:
+```
+2 0 false
+1 1 false
+0 2 false
+```
+",Other
+21390,2.0,Bug,21390,Bug: Cannot read property __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED of undefined,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+# I got this issue when using react in deno deploy, but i think it will still throw this error in nodejs
+
+## Code: https://github.com/code913/react-ssr-deno
+
+![what the heck is this tbh](https://user-images.githubusercontent.com/54856929/116580980-82ed1800-a931-11eb-8671-05cb0cde4dfc.png)
+
+React version: 17.0.2 react-dom, react version latest
+
+## Steps To Reproduce
+
+1. Import react-dom from the umd production or development url (havent tested others): `https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.development.min.js`
+2. Try to hydrate some data from react-dom/server",Support
+21411,1.0,Support,21411,Bug: Bug: Error message incorrectly,NONE,"Getting this error message:
+
+React Hook ""useStyles"" is called conditionally. React Hooks must be called in the exact same order in every component render
+
+However, I'm pretty darn sure that I'm not actually calling useStyles conditionally. Also, the error messages come and go if I comment out unrelated code.
+
+React version: 16.8",Other
+21644,3.0,Feature,21644,Request for Package Release,NONE,"I'm sorry if this is the wrong place to file this, but I wasn't sure how else to get ahold of the React team. The #21392 by @bvaughn fixes an issue that was causing MobX components to display components in stack traces as `wrappedComponent`, making it very hard to debug issues. This PR was merged back in April, but there hasn't been a React release since March. Is there any chance you guys would be willing to release React 17.0.3 with this fix?
+
+Thanks!",Support
+21989,1.0,Support,21989,Bug: createPortal anywhere in the tree makes native events be ran too late,NONE,"## Summary
+Native events added via `useEffect` are called too late (and with improper (new) state, rather than the state during listener attachment) if there's a `ReactDOM.createPortal` anywhere in the tree. First the effect is re-run and a new listener is attached, and only then the native event is called.
+
+React version:
+17.0.2
+
+Link to code example:
+
+[CodeSandbox](https://codesandbox.io/s/late-star-1izm6)
+
+## Reproduction 
+
+* Anywhere in the tree is a `createPortal`. It can even be `createPortal(null, document.body)`
+* Somewhere, there is a component with `useState`.
+* It renders a div. The div has an `onClick` handler passed.
+* On top of that, `useEffect` is used to attach a `click` event to `window`
+* Both event handlers (both the native event attached to window, and the React event passed to `div`) use `setState`.
+
+## The current behavior
+
+* The React handler is called. It calls setState
+* The component rerenders with the new state, and its effects are re-run.
+* Since the effect is re-run, a new native listener is attached (which is bound to the new state)
+* Only then, the new listener (with the NEW state) is called.
+
+## The expected behavior
+
+* The React handler is called. It calls setState
+* The component might rerender or not (doesn't matter)
+* The native handler is called with the old state.
+
+In other words
+```
+const [popupOpen, setPopupOpen] = useState(false);
+useEffect(() => {
+   // close popup if clicked anywhere on the screen, some code ignored for brevity 
+  const listener = () => {
+    console.log('NATIVE', popupOpen);
+    if (popupOpen) setPopupOpen(false);
+  };
+  window.addEventListener(""click"", listener);
+  return () => window.removeEventListener(""click"", listener);
+}, [popupOpen]);
+
+return (
+  <>
+    <div
+      onClick={() => {
+        console.log('REACT', popupOpen); // REACT HANDLER STATE
+        if (!popupOpen) setPopupOpen(true);
+      }}
+    >
+      Open popup
+    </div>
+    {ReactDOM.createPortal(null, document.body)}
+  </>
+);
+```
+
+Logs
+
+![image](https://user-images.githubusercontent.com/45483493/127549843-763c1ee1-4976-4d7b-855e-91b16b8c4e3e.png)
+
+But without `createPortal`, the following is logged:
+
+![image](https://user-images.githubusercontent.com/45483493/127550018-901aee68-c9d9-4c66-9897-9466789256ce.png)
+",Other
+22048,1.0,Support,22048,Bug: Cannot set property 'memoizedState' of null with nested renderToStaticMarkup and hooks,NONE,"React version: 17.0.2
+
+## Steps To Reproduce
+
+1. Have a component which memoizes the result of a renderToStaticMarkup.
+2. Use renderToStaticMarkup to render the component of 1.
+
+Link to code example:
+
+```
+function nestedRender() {
+  return renderToStaticMarkup(<p>This is the nested render result</p>);
+}
+
+function MyComponent() {
+  const nestedRenderResult = useMemo(() => nestedRender(), []); // Removing useMemo will solve the issue
+  return <p>The nested result is: {nestedRenderResult}</p>;
+}
+
+function wrapperRender() {
+  return renderToStaticMarkup(<MyComponent />);
+}
+```
+
+https://codesandbox.io/s/lingering-shadow-vyqyd
+
+## The current behavior
+
+The application crashes with a TypeError: Cannot set property 'memoizedState' of null
+
+```
+Uncaught TypeError: Cannot set property 'memoizedState' of null
+    at Object.useMemo (react-dom-server.browser.development.js:1587)
+    at useMemo (react.development.js:1532)
+    at MyComponent (App.tsx? [sm]:12)
+```
+
+## The expected behavior
+
+The result is rendered correctly to a string containing the final markup.
+
+## Context about my use case
+
+The example may seem a bit contrived as nesting renderToStaticMarkups is by no means a common case. However, we use the outer renderToStaticMarkup to do server side rendering of HTML output. The inner renderToStaticMarkup is used to render the content to a string on which we do extra postprocessing after (e.g. Handlebars).",Other
+22115,0.0,Other,22115,DevTools: Better Bundle Names for Dynamically Imported Modules,CONTRIBUTOR,"In the DevTools extension, webpack currently uses an automatically assigned ID as the chunk name for dynamically imported modules (ie. `parseHookNames` and associated code will get bundled into `6.js`).
+
+We've tried adding `chunkFilename: '[name].js'` to `output` in `webpack.config.js` and  magic comments (ie.`/* webpackChunkName: ""parseHookNames"" */`) to the dynamic import to fix, but neither works. ",Bug
+22133,1.0,Support,22133,refs for function components as first class citizens,NONE,"I'm looking everywhere, but I can't seem to find an official answer.
+
+It seems `ref`s are discouraged, and developers are required to use `forwardRef`, or pass ref as a separate prop (i.e. `forwardRef={ref}`). 
+`ref` are very important when access to the DOM is required, usually when a measurement is needed.
+Example usages include **tooltips**, graph nodes, animations, and dom observers.
+
+For example, [@tippyjs/react](https://www.npmjs.com/package/@tippyjs/react) assumes children receive a ref (since `findDOMNode` is deprecated), and will simply fail with most components.
+Another example is a `ClickOutside` hook, that watches click events and triggers callback which clicking on a dom element outside a specific component.
+
+Lastly, it really complicated component compositions.
+Composing components and ultimately forwarding all props down to the DOM allows us to use all components as first class citizens, so they all have the same abilities as a div. I can pass an event handlers, data attribute, tabIndex, etc, to any component, without having to alter it.
+```tsx
+interface UserMenuProps extends MenuProps {
+  users: User[];
+}
+
+function UserMenu({users, ...rest}: UserMenuProps) {
+  // even if Menu supports ref forwarding, I need to forwardRef again just to keep the same behavior.
+  return <Menu {...rest}>
+    {props.users.map(x=> <UserItem user={x})}
+  </Menu>
+}
+
+function SettingsPage(props) {
+  const privacyRef = useRef(null);
+  const validatePrivacy = () => {...};
+  
+  useClickOutside(privacyRef, validatePrivacy());
+
+  return <div>
+     {/* tooltip is implicitly using ref to target children */}
+     <Tooltip content=""this is your user menu!"">
+       <UserMenu className=""centered"" />
+     </Tooltip>
+     {/* PrivacySettings is already getting ref, so tooltip needs an explicit target */}
+     <Tooltip content=""select how public you want to be!"" target={privacyRef} />
+       <PrivacySettings ref={privacyRef} style={{shadow: ""1px 2px black""}} onClick=(...)/>
+     </ Tooltip>
+  </div>
+}
+```
+
+I don't like to use forwardRef because:
+* It prevents even the simplest of component from being used in (our) legacy react 15 project.
+* The syntax is really complicated, and I need to set the same function name 3 times for each component.
+* I don't want to add it to every single component I make. (and force my team to do the same).
+
+I would prefer to use refs as first class citizens, like
+```tsx
+function Menu(props: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      {...props}
+      className={cn(""menu"", props.className)}
+      // just to emphasize, I'm getting the ref from the props.
+      // I could also apply it to a different element, or pass a completely different object for ref.current, or keep it null
+      ref={props.ref}
+    />
+  )
+}
+```
+
+I see a hint here - https://github.com/reactjs/rfcs/pull/107#issuecomment-466282354, that refs will finally be first class props in the new JSX transform. Is this true? or will we still be required to use forwardRef?
+
+Most importantly, can I rely on it in projects with the new transform? including legacy project using `React 15.7.0`?",Other
+22301,1.0,Support,22301,found an empty rule set ,CONTRIBUTOR,"this is the file path - packages/react-devtools-shared/src/devtools/views/Settings/SettingsShared.css
+
+going here i found a empty rule set called selector which had nothing inside it and it is not a good practice to keep empty ruleset .
+
+
+here is the PR link for the same - https://github.com/facebook/react/pull/22298
+
+hope to get a feedback soon!",Other
+22758,1.0,Support,22758,Some one is changing the state variable from the react devlopment tool in production build?,NONE,,Other
+23374,0.0,Other,23374,Bug: CustomError: Cannot find module react/jsx-runtime,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+
+React version: 17.0.2
+
+## Steps To Reproduce
+
+Not sure
+
+## The current behavior 
+CustomError: Cannot find module react/jsx-runtime
+
+## The expected behavior
+No Error
+
+I switch from common js to esm & after done that I am getting this error.
+I added `.js` & here is my `tsconfig`
+
+```
+""target"": ""es5"",
+""module"": ""es2020"",
+""lib"": [""dom"", ""dom.iterable"", ""esnext""],
+""jsx"": ""react-jsx"",
+""moduleResolution"": ""node"",
+""allowJs"": true,
+""checkJs"": true,
+""noImplicitAny"": true,
+""noImplicitReturns"": true,
+""strictNullChecks"": true,
+""strictFunctionTypes"": true,
+""noUnusedLocals"": true,
+""noUnusedParameters"": true,
+""removeComments"": true,
+""strict"": true,
+""noFallthroughCasesInSwitch"": true,
+""allowSyntheticDefaultImports"": true,
+""esModuleInterop"": true,
+""skipLibCheck"": true,
+""forceConsistentCasingInFileNames"": true,
+""resolveJsonModule"": true,
+""isolatedModules"": true,
+""importHelpers"": true
+```
+",Support
+24170,1.0,Support,24170,[React DevTools] Component Stacks for Timeline Profiler,CONTRIBUTOR,"In the Timeline Profiler, we currently denote each state update with a dot. If you hover on the state update, you get some information about it, such as which component caused the update, the lane the update was rendered at, and the time that the update happened. This is useful for unique components. However, for components (ex. library components) that are used in multiple places, just having the component name is less helpful. 
+
+It would be most useful to get a stack of component owners (like in the rendered by section in the Components tab). However, we only have owner metadata in DEV mode, and it usually only makes sense to profile in production. The next best thing we can do, then, is to get all the parent components and create a stack out of that (ie the return path of the fiber rather than the owner path). 
+
+<img width=""1209"" alt=""image"" src=""https://user-images.githubusercontent.com/2735514/160208568-771861d3-59a3-4a82-9719-c8f5663ee574.png"">
+
+We want to add component stacks so that we also know which parent(s) caused the update. For this task, a potential solution is:
+* [ ] When a state update happens, walk the fiber's return path and save all the component names and their source. (See `markStateUpdateScheduled` for code pointers on where to put this)
+* [ ] After we're done profiling, process the stack so that we create a stack of return fibers
+* [ ] Pass the stack to the DevTools front end and add the component stacks to the UI when a user hovers over a state update",Feature
+24239,0.0,Other,24239,Bug: App is unresponsive with React 18,NONE,"Before upgrading to react 18 app was working well but after upgrading this is not responding well
+
+React version:18
+
+## Steps To Reproduce
+
+1. Open the application and wait for 2 sec. then see buttons are not clickable
+2. After sometime we will see page unresponsive
+
+Link to code example:
+
+Deployed URL : https://app-jitera.netlify.app/
+
+
+
+## The current behavior
+ As you can see in the screenshot.
+
+## The expected behavior
+It should run without lag.
+
+",Support
+24280,1.0,Support,24280,Bug: componentWillUnmount is called twice,NONE,"React version: 18.0.0
+
+## Steps To Reproduce
+
+`componentWillUnmount` is called twice upon toggling the rendered component. Even when **StrictMode** is disabled
+
+Link to code example: https://codesandbox.io/s/componentwillunmount-called-twice-hrpzy5?file=/src/App.js
+
+## The current behavior
+
+After upgrading to react 18 we've seen some different behavior in a conditionally rendered, lazy class component. 
+
+In the provided code example the class component is rendered first. After the first toggle, the class component's componentWillUnmount is called twice. 
+
+Subsequent toggle calls correctly lead to a single componentWillUnmount invocation.
+
+This does only seem to affect the class component when its rendered first. If the condition is changed to initially show the other function component the class component unmounts just fine
+
+## The expected behavior
+
+The class component's componentWillUnmount is only called once",Bug
+25287,3.0,Feature,25287,renderToPipeableStream gzip/broli support,NONE,"Hi,
+
+I would like to ask if there is any example about how to support gzip using renderToPipeableStream in SSR, i have being searching in stackoverflow and internet and nothing
+
+Regards
+",Other
+25300,0.0,Other,25300,React Lazy Load not working with variable path,NONE,"I have the same issue when using Lazy Load with variable path.
+
+if I put the path in the variable, I see ""Can't find the module""
+
+``` 
+const filePath = `@pages/general/general`;
+const component = React.lazy(() => import(`${filePath}`));
+```
+but if I put the path directly, it's working 
+```
+  const component = React.lazy(() => import(""@pages/general/general""));
+```
+
+any suggestions?
+
+_Originally posted by https://github.com/facebook/react/issues/16132#issue-467840101",Support
+25330,1.0,Support,25330,Bug: Unexpected useState behavior on StrictMode,NONE,"<!--
+  Please provide a clear and concise description of what the bug is. Include
+  screenshots if needed. Please test using the latest version of the relevant
+  React packages to make sure your issue has not already been fixed.
+-->
+Not sure if this is a bug, but when using `StrictMode` whether it is for production/development build, the callback in a setState `setState(callback)` is correctly called once. But the next call to setState will trigger the callback twice using the example described below.
+
+React version: 18.2.0
+
+## Steps To Reproduce
+
+1. Open https://codesandbox.io/s/recursing-firefly-gwcp3m?file=/src/App.js
+2. Click ""Add"" counter will increment to 2
+3. Click ""Add"" again, counter will increment to 5 (should be 3)
+
+<!--
+  Your bug will get fixed much faster if we can run your code and it doesn't
+  have dependencies other than React. Issues without reproduction steps or
+  code examples may be immediately closed as not actionable.
+-->
+
+Link to code example: https://codesandbox.io/s/recursing-firefly-gwcp3m?file=/src/App.js
+
+<!--
+  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a
+  repository on GitHub, or provide a minimal code example that reproduces the
+  problem. You may provide a screenshot of the application if you think it is
+  relevant to your bug report. Here are some tips for providing a minimal
+  example: https://stackoverflow.com/help/mcve.
+-->
+
+## The current behavior
+setState callback is called twice on the 2nd++ setState call
+
+## The expected behavior
+setState callback is called once on the 2nd++ setState call
+",Other
+25520,0.0,Other,25520,Bug: Github pages not displaying my Vite.js app  ,NONE,"Link to code example: https://github.com/claudeMassaad/TENZIES-GAME-REACT-APP
+
+Here's my main and index.html in Vite app:
+
+![Screen Shot 2022-10-20 at 10 16 31 AM](https://user-images.githubusercontent.com/109232112/196881586-b1023f1c-5173-4200-9395-6c346833aec7.png)
+![Screen Shot 2022-10-20 at 10 16 45 AM](https://user-images.githubusercontent.com/109232112/196881627-064570e9-e384-40c1-a44a-6879da8eb0e2.png)
+
+## The current behavior
+![Screen Shot 2022-10-20 at 10 15 39 AM](https://user-images.githubusercontent.com/109232112/196881433-8e7d367b-4f93-406d-b262-88627627f5b7.png)
+
+ Once i push to my github and then go to the pages feature on github where github generates a link for my web app, the screen is white and i get this error:Failed to load module script: Expected a JavaScript module script but the server responded with a MIME type of ""text/jsx"". Strict MIME type checking is enforced for module scripts per HTML spec.
+Now i cant change the name of main.jsx to main.js because Vite requires .jsx extensions.
+Any help?
+
+## The expected behavior
+
+
+I am running a react app created with Vite.js locally and everything works perfectly when i run npm run dev. It should do the same when github generates a link for my website",Support
+25589,1.0,Support,25589,Bug: Internal React error: Expected static flag was missing. Please notify the React team.,NONE,"After I upgraded the React version of the project from 16.14.0 to 18.2.0, the console reported the following warning after the project started
+
+```
+Warning: Internal React error: Expected static flag was missing. Please notify the React team.
+```
+![image](https://user-images.githubusercontent.com/52249626/198931381-bf4cb492-398d-480a-9d9b-a8576a1aa430.png)
+
+I don't know the specific cause of the bug
+",Other
